@@ -1,0 +1,36 @@
+.authorization {
+    width: 250px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.authorization__btn {
+    width: 205px;
+    border-radius: 5px;
+}
+
+.authorization__login {
+    width: 200px;
+    border-radius: 5px;
+}
+
+.authorization__password {
+    width: 200px;
+    border-radius: 5px;
+}
+
+.phone {
+    width: 250px;
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 10px;
+    justify-content: center;
+    align-items: center;
+}

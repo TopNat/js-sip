@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "JS Sip",
+  "description": "Расширение для хром: софтфон.",
+  "version": "1.0.0",
+  "icons": { "16": "icons/smartphone.png" },
+  "action": {
+    "default_popup": "./app.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/bundle.js"]
+    }
+  ],
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["unlimitedStorage", "storage", "scripting"],
+  "background": {
+    "service_worker": "service-worker.js"
+  }
+}
