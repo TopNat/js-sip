@@ -1,19 +1,315 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./app.js":
-/*!****************!*\
-  !*** ./app.js ***!
-  \****************/
+/***/ "./render.js":
+/*!*******************!*\
+  !*** ./render.js ***!
+  \*******************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   renderAuthorizationButton: () => (/* binding */ renderAuthorizationButton),
+/* harmony export */   renderAuthorizationScreen: () => (/* binding */ renderAuthorizationScreen),
+/* harmony export */   renderEndedButton: () => (/* binding */ renderEndedButton),
+/* harmony export */   renderExitButton: () => (/* binding */ renderExitButton),
+/* harmony export */   renderIncomingCall: () => (/* binding */ renderIncomingCall),
+/* harmony export */   renderPhone: () => (/* binding */ renderPhone),
+/* harmony export */   renderPhoneButton: () => (/* binding */ renderPhoneButton),
+/* harmony export */   renderStatusCall: () => (/* binding */ renderStatusCall),
+/* harmony export */   setMessage: () => (/* binding */ setMessage)
+/* harmony export */ });
+/* harmony import */ var _script_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./script.js */ "./script.js");
+
+
+//отрисовка кнопки завершения вызова
+function renderEndedButton(container) {
+  var button = document.createElement("button");
+  //button.textContent = "Завершить вызов";
+  button.classList.add("phone__btn_ended");
+  button.addEventListener("click", function () {
+    // receiveCall();
+    //console.log("phone");
+  });
+  container.appendChild(button);
+}
+
+//отрисовка блока при входящем звонке
+function renderIncomingCall(container) {
+  var button = document.createElement("button");
+  //button.textContent = "Ответить";
+  button.classList.add("phone__btn_answer");
+  button.addEventListener("click", function () {
+    (0,_script_js__WEBPACK_IMPORTED_MODULE_0__.receiveCall)();
+    //console.log("phone");
+  });
+  container.appendChild(button);
+}
+
+//изменение статуса звонка
+function setMessage(message) {
+  var messageSpan = document.querySelector(".messageSpan");
+  messageSpan.textContent = message;
+}
+
+//отрисовка блока исходящего звонка
+function renderPhoneButton(container) {
+  var button = document.createElement("button");
+  button.textContent = "Позвонить";
+  button.classList.add("phone__btn");
+  button.addEventListener("click", function () {
+    (0,_script_js__WEBPACK_IMPORTED_MODULE_0__.callPhone)();
+    //console.log("phone");
+  });
+  container.appendChild(button);
+}
+
+//отрисовка кнопки выхода
+function renderExitButton(container) {
+  var button = document.createElement("button");
+  //button.textContent = "Выйти";
+  button.classList.add("exit__btn");
+  // console.log("render_exit");
+  button.addEventListener("click", function () {
+    console.log("click_crear");
+    (0,_script_js__WEBPACK_IMPORTED_MODULE_0__.clearLoginPassword)();
+    //const app = document.querySelector(".app");
+    window.application.renderScreen("authorization");
+  });
+  container.appendChild(button);
+}
+
+//отрисовка кнопки авторизации
+function renderAuthorizationButton(container) {
+  var button = document.createElement("button");
+  button.textContent = "Войти";
+  button.classList.add("authorization__btn");
+  var loginIn = document.querySelector(".authorization__login");
+  var passwordIn = document.querySelector(".authorization__password");
+  //const app = document.querySelector(".app");
+
+  button.addEventListener("click", function () {
+    var login = loginIn.value.trim();
+    var password = passwordIn.value.trim();
+    (0,_script_js__WEBPACK_IMPORTED_MODULE_0__.setLoginPassword)(login, password);
+    window.application.renderScreen("phone");
+  });
+  container.appendChild(button);
+}
+
+//отрисовка окна авторизации
+function renderAuthorizationScreen(container) {
+  var formAuto = document.createElement("div");
+  formAuto.classList.add("authorization");
+  container.appendChild(formAuto);
+  var login = document.createElement("input");
+  login.type = "text";
+  login.placeholder = "Логин";
+  login.classList.add("authorization__login");
+  formAuto.appendChild(login);
+  var password = document.createElement("input");
+  password.type = "text";
+  password.placeholder = "Пароль";
+  password.classList.add("authorization__password");
+  formAuto.appendChild(password);
+  window.application.renderBlock("authorization-button", formAuto);
+}
+
+//отрисовка блока статуса звонка
+function renderStatusCall(container) {
+  var messageDiv = document.createElement("div");
+  messageDiv.classList.add("messageDiv");
+  container.appendChild(messageDiv);
+  var messageSpanLabel = document.createElement("span");
+  messageSpanLabel.classList.add("messageSpanLabel");
+  messageSpanLabel.textContent = "Статус звонка: ";
+  messageDiv.appendChild(messageSpanLabel);
+  var messageSpan = document.createElement("span");
+  messageSpan.classList.add("messageSpan");
+  messageSpan.textContent = "";
+  messageDiv.appendChild(messageSpan);
+}
+
+//отрисовка блока основного экрана
+function renderPhone(container) {
+  var phone = document.createElement("div");
+  phone.classList.add("phone");
+  container.appendChild(phone);
+  var listCallDiv = document.createElement("div");
+  listCallDiv.classList.add("listCallDiv");
+  phone.appendChild(listCallDiv);
+  var listCallTitle = document.createElement("h3");
+  listCallTitle.classList.add("listCallTitle");
+  listCallTitle.textContent = "Список звонков";
+  listCallDiv.appendChild(listCallTitle);
+  var ButtonCallDiv = document.createElement("div");
+  ButtonCallDiv.classList.add("ButtonCallDiv");
+  phone.appendChild(ButtonCallDiv);
+  var callDiv = document.createElement("div");
+  callDiv.classList.add("callDiv");
+  ButtonCallDiv.appendChild(callDiv);
+  var callInput = document.createElement("input");
+  callInput.classList.add("callInput");
+  callDiv.appendChild(callInput);
+  window.application.renderBlock("status-call", ButtonCallDiv);
+  window.application.renderBlock("phone-button", callDiv);
+  window.application.renderBlock("exit-button", ButtonCallDiv);
+}
+
+/***/ }),
+
+/***/ "./script.js":
+/*!*******************!*\
+  !*** ./script.js ***!
+  \*******************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   callPhone: () => (/* binding */ callPhone),
 /* harmony export */   clearLoginPassword: () => (/* binding */ clearLoginPassword),
+/* harmony export */   coolPhone: () => (/* binding */ coolPhone),
+/* harmony export */   receiveCall: () => (/* binding */ receiveCall),
 /* harmony export */   renderFirstScreen: () => (/* binding */ renderFirstScreen),
 /* harmony export */   setLoginPassword: () => (/* binding */ setLoginPassword)
 /* harmony export */ });
+/* harmony import */ var jssip__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jssip */ "./node_modules/jssip/lib-es5/JsSIP.js");
+/* harmony import */ var jssip__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jssip__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render.js */ "./render.js");
+
+
+window.application = {
+  blocks: {},
+  screens: {},
+  renderScreen: function renderScreen(screenName) {
+    console.log(screenName);
+    var app = document.querySelector(".app");
+    app.textContent = "";
+    var main = document.createElement("div");
+    main.classList.add("main");
+    app.appendChild(main);
+    console.log(this.screens[screenName]);
+    if (this.screens[screenName]) {
+      this.screens[screenName](main);
+    }
+  },
+  renderBlock: function renderBlock(blockName, container) {
+    console.log("block");
+    console.log(blockName);
+    this.blocks[blockName](container);
+  }
+};
+window.application.screens["authorization"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderAuthorizationScreen;
+window.application.screens["phone"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderPhone;
+window.application.blocks["incoming-call"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderIncomingCall;
+window.application.blocks["phone-button"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderPhoneButton;
+window.application.blocks["exit-button"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderExitButton;
+window.application.blocks["authorization-button"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderAuthorizationButton;
+window.application.blocks["ended-button"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderEndedButton;
+window.application.blocks["status-call"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderStatusCall;
+renderFirstScreen();
+var socket = new jssip__WEBPACK_IMPORTED_MODULE_0__.WebSocketInterface("wss:/voip.uiscom.ru");
+var configuration = {
+  sockets: [socket],
+  uri: "sip:0344302@voip.uiscom.ru",
+  password: "FYCpwA_3Bc",
+  sessionDescriptionHandlerFactoryOptions: {
+    constraints: {
+      audio: true,
+      video: true
+    }
+  }
+};
+var coolPhone = new jssip__WEBPACK_IMPORTED_MODULE_0__.UA(configuration);
+coolPhone.on("connected", function (e) {
+  console.log("connected");
+});
+coolPhone.on("disconnected", function (e) {
+  console.log("disconnected");
+});
+var session;
+coolPhone.on("newRTCSession", function (data) {
+  session = data.session;
+  console.log(session);
+  console.log(session.start_time);
+  if (session.direction === "incoming") {
+    var phone__btn_answer = document.querySelector(".phone__btn_answer");
+    if (!phone__btn_answer) {
+      var phone_conteiner = document.querySelector(".callDiv");
+      window.application.renderBlock("incoming-call", phone_conteiner);
+      window.application.renderBlock("ended-button", phone_conteiner);
+    }
+    session.on("accepted", function () {
+      (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("accepted");
+      console.log(session.start_time);
+    });
+    session.on("ended", function () {
+      (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("ended");
+      console.log(session.end_time);
+    });
+    session.on("progress", function () {
+      (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("progress");
+    });
+    session.on("failed", function (e) {
+      (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("failed");
+      // console.log(e.cause);
+    });
+    session.on("connecting", function () {
+      (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("connecting");
+    });
+    session.on("confirmed", function () {
+      (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("confirmed");
+    });
+  }
+});
+coolPhone.start();
+window.addEventListener("keydown", function (e) {
+  if (e.key === "o") receiveCall();
+});
+function receiveCall() {
+  if (session) {
+    session.answer();
+  }
+}
+function callPhone() {
+  var options = {
+    mediaConstraints: {
+      audio: true,
+      video: false
+    },
+    rtcOfferConstraints: {
+      offerToReceiveAudio: 1,
+      offerToReceiveVideo: 0
+    },
+    pcConfig: {
+      hackStripTcp: true,
+      rtcpMuxPolicy: "negotiate",
+      iceServers: []
+    }
+  };
+  var sessionCall = coolPhone.call("sip:0344301@voip.uiscom.ru", options);
+  sessionCall.on("accepted", function () {
+    (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("accepted");
+  });
+  sessionCall.on("ended", function () {
+    (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("ended");
+  });
+  sessionCall.on("progress", function () {
+    (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("progress");
+  });
+  sessionCall.on("failed", function (e) {
+    (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("failed");
+    //console.log(e.cause);
+  });
+  sessionCall.on("connecting", function () {
+    (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("connecting");
+  });
+  sessionCall.on("confirmed", function () {
+    (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("confirmed");
+  });
+}
 function setLoginPassword(log, pas) {
   chrome.storage.local.set({
     login: "0344302"
@@ -21,16 +317,14 @@ function setLoginPassword(log, pas) {
   chrome.storage.local.set({
     password: "FYCpwA_3Bc"
   });
-  //console.log(log + "+" + pas);
-  // window.application.login = login;
-  //window.application.password = password;
 }
 function clearLoginPassword() {
   chrome.storage.local.clear();
-  console.log("clear");
+  coolPhone.stop();
   window.close();
 }
 function renderFirstScreen() {
+  //const app = document.querySelector(".app");
   chrome.storage.local.get(["login"], function (data) {
     if (data.login) {
       window.application.renderScreen("phone");
@@ -46,9 +340,562 @@ function renderFirstScreen() {
 /*!*******************************************!*\
   !*** ./node_modules/debug/src/browser.js ***!
   \*******************************************/
-/***/ (() => {
+/***/ ((module, exports, __webpack_require__) => {
 
-throw new Error("Module build failed: Error: ENOENT: no such file or directory, open 'C:\\2\\CoMagic\\3\\node_modules\\debug\\src\\browser.js'");
+/* eslint-env browser */
+
+/**
+ * This is the web browser implementation of `debug()`.
+ */
+
+exports.formatArgs = formatArgs;
+exports.save = save;
+exports.load = load;
+exports.useColors = useColors;
+exports.storage = localstorage();
+exports.destroy = (() => {
+	let warned = false;
+
+	return () => {
+		if (!warned) {
+			warned = true;
+			console.warn('Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.');
+		}
+	};
+})();
+
+/**
+ * Colors.
+ */
+
+exports.colors = [
+	'#0000CC',
+	'#0000FF',
+	'#0033CC',
+	'#0033FF',
+	'#0066CC',
+	'#0066FF',
+	'#0099CC',
+	'#0099FF',
+	'#00CC00',
+	'#00CC33',
+	'#00CC66',
+	'#00CC99',
+	'#00CCCC',
+	'#00CCFF',
+	'#3300CC',
+	'#3300FF',
+	'#3333CC',
+	'#3333FF',
+	'#3366CC',
+	'#3366FF',
+	'#3399CC',
+	'#3399FF',
+	'#33CC00',
+	'#33CC33',
+	'#33CC66',
+	'#33CC99',
+	'#33CCCC',
+	'#33CCFF',
+	'#6600CC',
+	'#6600FF',
+	'#6633CC',
+	'#6633FF',
+	'#66CC00',
+	'#66CC33',
+	'#9900CC',
+	'#9900FF',
+	'#9933CC',
+	'#9933FF',
+	'#99CC00',
+	'#99CC33',
+	'#CC0000',
+	'#CC0033',
+	'#CC0066',
+	'#CC0099',
+	'#CC00CC',
+	'#CC00FF',
+	'#CC3300',
+	'#CC3333',
+	'#CC3366',
+	'#CC3399',
+	'#CC33CC',
+	'#CC33FF',
+	'#CC6600',
+	'#CC6633',
+	'#CC9900',
+	'#CC9933',
+	'#CCCC00',
+	'#CCCC33',
+	'#FF0000',
+	'#FF0033',
+	'#FF0066',
+	'#FF0099',
+	'#FF00CC',
+	'#FF00FF',
+	'#FF3300',
+	'#FF3333',
+	'#FF3366',
+	'#FF3399',
+	'#FF33CC',
+	'#FF33FF',
+	'#FF6600',
+	'#FF6633',
+	'#FF9900',
+	'#FF9933',
+	'#FFCC00',
+	'#FFCC33'
+];
+
+/**
+ * Currently only WebKit-based Web Inspectors, Firefox >= v31,
+ * and the Firebug extension (any Firefox version) are known
+ * to support "%c" CSS customizations.
+ *
+ * TODO: add a `localStorage` variable to explicitly enable/disable colors
+ */
+
+// eslint-disable-next-line complexity
+function useColors() {
+	// NB: In an Electron preload script, document will be defined but not fully
+	// initialized. Since we know we're in Chrome, we'll just detect this case
+	// explicitly
+	if (typeof window !== 'undefined' && window.process && (window.process.type === 'renderer' || window.process.__nwjs)) {
+		return true;
+	}
+
+	// Internet Explorer and Edge do not support colors.
+	if (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+		return false;
+	}
+
+	// Is webkit? http://stackoverflow.com/a/16459606/376773
+	// document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
+	return (typeof document !== 'undefined' && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance) ||
+		// Is firebug? http://stackoverflow.com/a/398120/376773
+		(typeof window !== 'undefined' && window.console && (window.console.firebug || (window.console.exception && window.console.table))) ||
+		// Is firefox >= v31?
+		// https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+		(typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31) ||
+		// Double check webkit in userAgent just in case we are in a worker
+		(typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/));
+}
+
+/**
+ * Colorize log arguments if enabled.
+ *
+ * @api public
+ */
+
+function formatArgs(args) {
+	args[0] = (this.useColors ? '%c' : '') +
+		this.namespace +
+		(this.useColors ? ' %c' : ' ') +
+		args[0] +
+		(this.useColors ? '%c ' : ' ') +
+		'+' + module.exports.humanize(this.diff);
+
+	if (!this.useColors) {
+		return;
+	}
+
+	const c = 'color: ' + this.color;
+	args.splice(1, 0, c, 'color: inherit');
+
+	// The final "%c" is somewhat tricky, because there could be other
+	// arguments passed either before or after the %c, so we need to
+	// figure out the correct index to insert the CSS into
+	let index = 0;
+	let lastC = 0;
+	args[0].replace(/%[a-zA-Z%]/g, match => {
+		if (match === '%%') {
+			return;
+		}
+		index++;
+		if (match === '%c') {
+			// We only are interested in the *last* %c
+			// (the user may have provided their own)
+			lastC = index;
+		}
+	});
+
+	args.splice(lastC, 0, c);
+}
+
+/**
+ * Invokes `console.debug()` when available.
+ * No-op when `console.debug` is not a "function".
+ * If `console.debug` is not available, falls back
+ * to `console.log`.
+ *
+ * @api public
+ */
+exports.log = console.debug || console.log || (() => {});
+
+/**
+ * Save `namespaces`.
+ *
+ * @param {String} namespaces
+ * @api private
+ */
+function save(namespaces) {
+	try {
+		if (namespaces) {
+			exports.storage.setItem('debug', namespaces);
+		} else {
+			exports.storage.removeItem('debug');
+		}
+	} catch (error) {
+		// Swallow
+		// XXX (@Qix-) should we be logging these?
+	}
+}
+
+/**
+ * Load `namespaces`.
+ *
+ * @return {String} returns the previously persisted debug modes
+ * @api private
+ */
+function load() {
+	let r;
+	try {
+		r = exports.storage.getItem('debug');
+	} catch (error) {
+		// Swallow
+		// XXX (@Qix-) should we be logging these?
+	}
+
+	// If debug isn't set in LS, and we're in Electron, try to load $DEBUG
+	if (!r && typeof process !== 'undefined' && 'env' in process) {
+		r = process.env.DEBUG;
+	}
+
+	return r;
+}
+
+/**
+ * Localstorage attempts to return the localstorage.
+ *
+ * This is necessary because safari throws
+ * when a user disables cookies/localstorage
+ * and you attempt to access it.
+ *
+ * @return {LocalStorage}
+ * @api private
+ */
+
+function localstorage() {
+	try {
+		// TVMLKit (Apple TV JS Runtime) does not have a window object, just localStorage in the global context
+		// The Browser also has localStorage in the global context.
+		return localStorage;
+	} catch (error) {
+		// Swallow
+		// XXX (@Qix-) should we be logging these?
+	}
+}
+
+module.exports = __webpack_require__(/*! ./common */ "./node_modules/debug/src/common.js")(exports);
+
+const {formatters} = module.exports;
+
+/**
+ * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
+ */
+
+formatters.j = function (v) {
+	try {
+		return JSON.stringify(v);
+	} catch (error) {
+		return '[UnexpectedJSONParseError]: ' + error.message;
+	}
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/debug/src/common.js":
+/*!******************************************!*\
+  !*** ./node_modules/debug/src/common.js ***!
+  \******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+
+/**
+ * This is the common logic for both the Node.js and web browser
+ * implementations of `debug()`.
+ */
+
+function setup(env) {
+	createDebug.debug = createDebug;
+	createDebug.default = createDebug;
+	createDebug.coerce = coerce;
+	createDebug.disable = disable;
+	createDebug.enable = enable;
+	createDebug.enabled = enabled;
+	createDebug.humanize = __webpack_require__(/*! ms */ "./node_modules/ms/index.js");
+	createDebug.destroy = destroy;
+
+	Object.keys(env).forEach(key => {
+		createDebug[key] = env[key];
+	});
+
+	/**
+	* The currently active debug mode names, and names to skip.
+	*/
+
+	createDebug.names = [];
+	createDebug.skips = [];
+
+	/**
+	* Map of special "%n" handling functions, for the debug "format" argument.
+	*
+	* Valid key names are a single, lower or upper-case letter, i.e. "n" and "N".
+	*/
+	createDebug.formatters = {};
+
+	/**
+	* Selects a color for a debug namespace
+	* @param {String} namespace The namespace string for the debug instance to be colored
+	* @return {Number|String} An ANSI color code for the given namespace
+	* @api private
+	*/
+	function selectColor(namespace) {
+		let hash = 0;
+
+		for (let i = 0; i < namespace.length; i++) {
+			hash = ((hash << 5) - hash) + namespace.charCodeAt(i);
+			hash |= 0; // Convert to 32bit integer
+		}
+
+		return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+	}
+	createDebug.selectColor = selectColor;
+
+	/**
+	* Create a debugger with the given `namespace`.
+	*
+	* @param {String} namespace
+	* @return {Function}
+	* @api public
+	*/
+	function createDebug(namespace) {
+		let prevTime;
+		let enableOverride = null;
+		let namespacesCache;
+		let enabledCache;
+
+		function debug(...args) {
+			// Disabled?
+			if (!debug.enabled) {
+				return;
+			}
+
+			const self = debug;
+
+			// Set `diff` timestamp
+			const curr = Number(new Date());
+			const ms = curr - (prevTime || curr);
+			self.diff = ms;
+			self.prev = prevTime;
+			self.curr = curr;
+			prevTime = curr;
+
+			args[0] = createDebug.coerce(args[0]);
+
+			if (typeof args[0] !== 'string') {
+				// Anything else let's inspect with %O
+				args.unshift('%O');
+			}
+
+			// Apply any `formatters` transformations
+			let index = 0;
+			args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+				// If we encounter an escaped % then don't increase the array index
+				if (match === '%%') {
+					return '%';
+				}
+				index++;
+				const formatter = createDebug.formatters[format];
+				if (typeof formatter === 'function') {
+					const val = args[index];
+					match = formatter.call(self, val);
+
+					// Now we need to remove `args[index]` since it's inlined in the `format`
+					args.splice(index, 1);
+					index--;
+				}
+				return match;
+			});
+
+			// Apply env-specific formatting (colors, etc.)
+			createDebug.formatArgs.call(self, args);
+
+			const logFn = self.log || createDebug.log;
+			logFn.apply(self, args);
+		}
+
+		debug.namespace = namespace;
+		debug.useColors = createDebug.useColors();
+		debug.color = createDebug.selectColor(namespace);
+		debug.extend = extend;
+		debug.destroy = createDebug.destroy; // XXX Temporary. Will be removed in the next major release.
+
+		Object.defineProperty(debug, 'enabled', {
+			enumerable: true,
+			configurable: false,
+			get: () => {
+				if (enableOverride !== null) {
+					return enableOverride;
+				}
+				if (namespacesCache !== createDebug.namespaces) {
+					namespacesCache = createDebug.namespaces;
+					enabledCache = createDebug.enabled(namespace);
+				}
+
+				return enabledCache;
+			},
+			set: v => {
+				enableOverride = v;
+			}
+		});
+
+		// Env-specific initialization logic for debug instances
+		if (typeof createDebug.init === 'function') {
+			createDebug.init(debug);
+		}
+
+		return debug;
+	}
+
+	function extend(namespace, delimiter) {
+		const newDebug = createDebug(this.namespace + (typeof delimiter === 'undefined' ? ':' : delimiter) + namespace);
+		newDebug.log = this.log;
+		return newDebug;
+	}
+
+	/**
+	* Enables a debug mode by namespaces. This can include modes
+	* separated by a colon and wildcards.
+	*
+	* @param {String} namespaces
+	* @api public
+	*/
+	function enable(namespaces) {
+		createDebug.save(namespaces);
+		createDebug.namespaces = namespaces;
+
+		createDebug.names = [];
+		createDebug.skips = [];
+
+		let i;
+		const split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
+		const len = split.length;
+
+		for (i = 0; i < len; i++) {
+			if (!split[i]) {
+				// ignore empty strings
+				continue;
+			}
+
+			namespaces = split[i].replace(/\*/g, '.*?');
+
+			if (namespaces[0] === '-') {
+				createDebug.skips.push(new RegExp('^' + namespaces.slice(1) + '$'));
+			} else {
+				createDebug.names.push(new RegExp('^' + namespaces + '$'));
+			}
+		}
+	}
+
+	/**
+	* Disable debug output.
+	*
+	* @return {String} namespaces
+	* @api public
+	*/
+	function disable() {
+		const namespaces = [
+			...createDebug.names.map(toNamespace),
+			...createDebug.skips.map(toNamespace).map(namespace => '-' + namespace)
+		].join(',');
+		createDebug.enable('');
+		return namespaces;
+	}
+
+	/**
+	* Returns true if the given mode name is enabled, false otherwise.
+	*
+	* @param {String} name
+	* @return {Boolean}
+	* @api public
+	*/
+	function enabled(name) {
+		if (name[name.length - 1] === '*') {
+			return true;
+		}
+
+		let i;
+		let len;
+
+		for (i = 0, len = createDebug.skips.length; i < len; i++) {
+			if (createDebug.skips[i].test(name)) {
+				return false;
+			}
+		}
+
+		for (i = 0, len = createDebug.names.length; i < len; i++) {
+			if (createDebug.names[i].test(name)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	* Convert regexp to namespace
+	*
+	* @param {RegExp} regxep
+	* @return {String} namespace
+	* @api private
+	*/
+	function toNamespace(regexp) {
+		return regexp.toString()
+			.substring(2, regexp.toString().length - 2)
+			.replace(/\.\*\?$/, '*');
+	}
+
+	/**
+	* Coerce `val`.
+	*
+	* @param {Mixed} val
+	* @return {Mixed}
+	* @api private
+	*/
+	function coerce(val) {
+		if (val instanceof Error) {
+			return val.stack || val.message;
+		}
+		return val;
+	}
+
+	/**
+	* XXX DO NOT USE. This is a temporary stub function.
+	* XXX It WILL be removed in the next major release.
+	*/
+	function destroy() {
+		console.warn('Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.');
+	}
+
+	createDebug.enable(createDebug.load());
+
+	return createDebug;
+}
+
+module.exports = setup;
+
 
 /***/ }),
 
@@ -56,9 +903,507 @@ throw new Error("Module build failed: Error: ENOENT: no such file or directory, 
 /*!***************************************!*\
   !*** ./node_modules/events/events.js ***!
   \***************************************/
-/***/ (() => {
+/***/ ((module) => {
 
-throw new Error("Module build failed: Error: ENOENT: no such file or directory, open 'C:\\2\\CoMagic\\3\\node_modules\\events\\events.js'");
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+var R = typeof Reflect === 'object' ? Reflect : null
+var ReflectApply = R && typeof R.apply === 'function'
+  ? R.apply
+  : function ReflectApply(target, receiver, args) {
+    return Function.prototype.apply.call(target, receiver, args);
+  }
+
+var ReflectOwnKeys
+if (R && typeof R.ownKeys === 'function') {
+  ReflectOwnKeys = R.ownKeys
+} else if (Object.getOwnPropertySymbols) {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target)
+      .concat(Object.getOwnPropertySymbols(target));
+  };
+} else {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target);
+  };
+}
+
+function ProcessEmitWarning(warning) {
+  if (console && console.warn) console.warn(warning);
+}
+
+var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
+  return value !== value;
+}
+
+function EventEmitter() {
+  EventEmitter.init.call(this);
+}
+module.exports = EventEmitter;
+module.exports.once = once;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._eventsCount = 0;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+var defaultMaxListeners = 10;
+
+function checkListener(listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+}
+
+Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+  enumerable: true,
+  get: function() {
+    return defaultMaxListeners;
+  },
+  set: function(arg) {
+    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
+      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
+    }
+    defaultMaxListeners = arg;
+  }
+});
+
+EventEmitter.init = function() {
+
+  if (this._events === undefined ||
+      this._events === Object.getPrototypeOf(this)._events) {
+    this._events = Object.create(null);
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+};
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
+    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
+  }
+  this._maxListeners = n;
+  return this;
+};
+
+function _getMaxListeners(that) {
+  if (that._maxListeners === undefined)
+    return EventEmitter.defaultMaxListeners;
+  return that._maxListeners;
+}
+
+EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+  return _getMaxListeners(this);
+};
+
+EventEmitter.prototype.emit = function emit(type) {
+  var args = [];
+  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
+  var doError = (type === 'error');
+
+  var events = this._events;
+  if (events !== undefined)
+    doError = (doError && events.error === undefined);
+  else if (!doError)
+    return false;
+
+  // If there is no 'error' event listener then throw.
+  if (doError) {
+    var er;
+    if (args.length > 0)
+      er = args[0];
+    if (er instanceof Error) {
+      // Note: The comments on the `throw` lines are intentional, they show
+      // up in Node's output if this results in an unhandled exception.
+      throw er; // Unhandled 'error' event
+    }
+    // At least give some kind of context to the user
+    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
+    err.context = er;
+    throw err; // Unhandled 'error' event
+  }
+
+  var handler = events[type];
+
+  if (handler === undefined)
+    return false;
+
+  if (typeof handler === 'function') {
+    ReflectApply(handler, this, args);
+  } else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      ReflectApply(listeners[i], this, args);
+  }
+
+  return true;
+};
+
+function _addListener(target, type, listener, prepend) {
+  var m;
+  var events;
+  var existing;
+
+  checkListener(listener);
+
+  events = target._events;
+  if (events === undefined) {
+    events = target._events = Object.create(null);
+    target._eventsCount = 0;
+  } else {
+    // To avoid recursion in the case that type === "newListener"! Before
+    // adding it to the listeners, first emit "newListener".
+    if (events.newListener !== undefined) {
+      target.emit('newListener', type,
+                  listener.listener ? listener.listener : listener);
+
+      // Re-assign `events` because a newListener handler could have caused the
+      // this._events to be assigned to a new object
+      events = target._events;
+    }
+    existing = events[type];
+  }
+
+  if (existing === undefined) {
+    // Optimize the case of one listener. Don't need the extra array object.
+    existing = events[type] = listener;
+    ++target._eventsCount;
+  } else {
+    if (typeof existing === 'function') {
+      // Adding the second element, need to change to array.
+      existing = events[type] =
+        prepend ? [listener, existing] : [existing, listener];
+      // If we've already got an array, just append.
+    } else if (prepend) {
+      existing.unshift(listener);
+    } else {
+      existing.push(listener);
+    }
+
+    // Check for listener leak
+    m = _getMaxListeners(target);
+    if (m > 0 && existing.length > m && !existing.warned) {
+      existing.warned = true;
+      // No error code for this since it is a Warning
+      // eslint-disable-next-line no-restricted-syntax
+      var w = new Error('Possible EventEmitter memory leak detected. ' +
+                          existing.length + ' ' + String(type) + ' listeners ' +
+                          'added. Use emitter.setMaxListeners() to ' +
+                          'increase limit');
+      w.name = 'MaxListenersExceededWarning';
+      w.emitter = target;
+      w.type = type;
+      w.count = existing.length;
+      ProcessEmitWarning(w);
+    }
+  }
+
+  return target;
+}
+
+EventEmitter.prototype.addListener = function addListener(type, listener) {
+  return _addListener(this, type, listener, false);
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.prependListener =
+    function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+
+function onceWrapper() {
+  if (!this.fired) {
+    this.target.removeListener(this.type, this.wrapFn);
+    this.fired = true;
+    if (arguments.length === 0)
+      return this.listener.call(this.target);
+    return this.listener.apply(this.target, arguments);
+  }
+}
+
+function _onceWrap(target, type, listener) {
+  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
+  var wrapped = onceWrapper.bind(state);
+  wrapped.listener = listener;
+  state.wrapFn = wrapped;
+  return wrapped;
+}
+
+EventEmitter.prototype.once = function once(type, listener) {
+  checkListener(listener);
+  this.on(type, _onceWrap(this, type, listener));
+  return this;
+};
+
+EventEmitter.prototype.prependOnceListener =
+    function prependOnceListener(type, listener) {
+      checkListener(listener);
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+
+// Emits a 'removeListener' event if and only if the listener was removed.
+EventEmitter.prototype.removeListener =
+    function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+
+      checkListener(listener);
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      list = events[type];
+      if (list === undefined)
+        return this;
+
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = Object.create(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit('removeListener', type, list.listener || listener);
+        }
+      } else if (typeof list !== 'function') {
+        position = -1;
+
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+
+        if (position < 0)
+          return this;
+
+        if (position === 0)
+          list.shift();
+        else {
+          spliceOne(list, position);
+        }
+
+        if (list.length === 1)
+          events[type] = list[0];
+
+        if (events.removeListener !== undefined)
+          this.emit('removeListener', type, originalListener || listener);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
+EventEmitter.prototype.removeAllListeners =
+    function removeAllListeners(type) {
+      var listeners, events, i;
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      // not listening for removeListener, no need to emit
+      if (events.removeListener === undefined) {
+        if (arguments.length === 0) {
+          this._events = Object.create(null);
+          this._eventsCount = 0;
+        } else if (events[type] !== undefined) {
+          if (--this._eventsCount === 0)
+            this._events = Object.create(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+
+      // emit removeListener for all listeners on all events
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === 'removeListener') continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners('removeListener');
+        this._events = Object.create(null);
+        this._eventsCount = 0;
+        return this;
+      }
+
+      listeners = events[type];
+
+      if (typeof listeners === 'function') {
+        this.removeListener(type, listeners);
+      } else if (listeners !== undefined) {
+        // LIFO order
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+
+      return this;
+    };
+
+function _listeners(target, type, unwrap) {
+  var events = target._events;
+
+  if (events === undefined)
+    return [];
+
+  var evlistener = events[type];
+  if (evlistener === undefined)
+    return [];
+
+  if (typeof evlistener === 'function')
+    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+  return unwrap ?
+    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+}
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  return _listeners(this, type, true);
+};
+
+EventEmitter.prototype.rawListeners = function rawListeners(type) {
+  return _listeners(this, type, false);
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  if (typeof emitter.listenerCount === 'function') {
+    return emitter.listenerCount(type);
+  } else {
+    return listenerCount.call(emitter, type);
+  }
+};
+
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
+  var events = this._events;
+
+  if (events !== undefined) {
+    var evlistener = events[type];
+
+    if (typeof evlistener === 'function') {
+      return 1;
+    } else if (evlistener !== undefined) {
+      return evlistener.length;
+    }
+  }
+
+  return 0;
+}
+
+EventEmitter.prototype.eventNames = function eventNames() {
+  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+};
+
+function arrayClone(arr, n) {
+  var copy = new Array(n);
+  for (var i = 0; i < n; ++i)
+    copy[i] = arr[i];
+  return copy;
+}
+
+function spliceOne(list, index) {
+  for (; index + 1 < list.length; index++)
+    list[index] = list[index + 1];
+  list.pop();
+}
+
+function unwrapListeners(arr) {
+  var ret = new Array(arr.length);
+  for (var i = 0; i < ret.length; ++i) {
+    ret[i] = arr[i].listener || arr[i];
+  }
+  return ret;
+}
+
+function once(emitter, name) {
+  return new Promise(function (resolve, reject) {
+    function errorListener(err) {
+      emitter.removeListener(name, resolver);
+      reject(err);
+    }
+
+    function resolver() {
+      if (typeof emitter.removeListener === 'function') {
+        emitter.removeListener('error', errorListener);
+      }
+      resolve([].slice.call(arguments));
+    };
+
+    eventTargetAgnosticAddListener(emitter, name, resolver, { once: true });
+    if (name !== 'error') {
+      addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
+    }
+  });
+}
+
+function addErrorHandlerIfEventEmitter(emitter, handler, flags) {
+  if (typeof emitter.on === 'function') {
+    eventTargetAgnosticAddListener(emitter, 'error', handler, flags);
+  }
+}
+
+function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
+  if (typeof emitter.on === 'function') {
+    if (flags.once) {
+      emitter.once(name, listener);
+    } else {
+      emitter.on(name, listener);
+    }
+  } else if (typeof emitter.addEventListener === 'function') {
+    // EventTarget does not have `error` event semantics like Node
+    // EventEmitters, we do not listen for `error` events here.
+    emitter.addEventListener(name, function wrapListener(arg) {
+      // IE does not have builtin `{ once: true }` support so we
+      // have to do it manually.
+      if (flags.once) {
+        emitter.removeEventListener(name, wrapListener);
+      }
+      listener(arg);
+    });
+  } else {
+    throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter);
+  }
+}
+
 
 /***/ }),
 
@@ -26523,13 +27868,958 @@ function reply(status_code) {
 
 /***/ }),
 
+/***/ "./node_modules/ms/index.js":
+/*!**********************************!*\
+  !*** ./node_modules/ms/index.js ***!
+  \**********************************/
+/***/ ((module) => {
+
+/**
+ * Helpers.
+ */
+
+var s = 1000;
+var m = s * 60;
+var h = m * 60;
+var d = h * 24;
+var w = d * 7;
+var y = d * 365.25;
+
+/**
+ * Parse or format the given `val`.
+ *
+ * Options:
+ *
+ *  - `long` verbose formatting [false]
+ *
+ * @param {String|Number} val
+ * @param {Object} [options]
+ * @throws {Error} throw an error if val is not a non-empty string or a number
+ * @return {String|Number}
+ * @api public
+ */
+
+module.exports = function(val, options) {
+  options = options || {};
+  var type = typeof val;
+  if (type === 'string' && val.length > 0) {
+    return parse(val);
+  } else if (type === 'number' && isFinite(val)) {
+    return options.long ? fmtLong(val) : fmtShort(val);
+  }
+  throw new Error(
+    'val is not a non-empty string or a valid number. val=' +
+      JSON.stringify(val)
+  );
+};
+
+/**
+ * Parse the given `str` and return milliseconds.
+ *
+ * @param {String} str
+ * @return {Number}
+ * @api private
+ */
+
+function parse(str) {
+  str = String(str);
+  if (str.length > 100) {
+    return;
+  }
+  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+    str
+  );
+  if (!match) {
+    return;
+  }
+  var n = parseFloat(match[1]);
+  var type = (match[2] || 'ms').toLowerCase();
+  switch (type) {
+    case 'years':
+    case 'year':
+    case 'yrs':
+    case 'yr':
+    case 'y':
+      return n * y;
+    case 'weeks':
+    case 'week':
+    case 'w':
+      return n * w;
+    case 'days':
+    case 'day':
+    case 'd':
+      return n * d;
+    case 'hours':
+    case 'hour':
+    case 'hrs':
+    case 'hr':
+    case 'h':
+      return n * h;
+    case 'minutes':
+    case 'minute':
+    case 'mins':
+    case 'min':
+    case 'm':
+      return n * m;
+    case 'seconds':
+    case 'second':
+    case 'secs':
+    case 'sec':
+    case 's':
+      return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
+    case 'ms':
+      return n;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Short format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtShort(ms) {
+  var msAbs = Math.abs(ms);
+  if (msAbs >= d) {
+    return Math.round(ms / d) + 'd';
+  }
+  if (msAbs >= h) {
+    return Math.round(ms / h) + 'h';
+  }
+  if (msAbs >= m) {
+    return Math.round(ms / m) + 'm';
+  }
+  if (msAbs >= s) {
+    return Math.round(ms / s) + 's';
+  }
+  return ms + 'ms';
+}
+
+/**
+ * Long format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtLong(ms) {
+  var msAbs = Math.abs(ms);
+  if (msAbs >= d) {
+    return plural(ms, msAbs, d, 'day');
+  }
+  if (msAbs >= h) {
+    return plural(ms, msAbs, h, 'hour');
+  }
+  if (msAbs >= m) {
+    return plural(ms, msAbs, m, 'minute');
+  }
+  if (msAbs >= s) {
+    return plural(ms, msAbs, s, 'second');
+  }
+  return ms + ' ms';
+}
+
+/**
+ * Pluralization helper.
+ */
+
+function plural(ms, msAbs, n, name) {
+  var isPlural = msAbs >= n * 1.5;
+  return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/sdp-transform/lib/grammar.js":
+/*!***************************************************!*\
+  !*** ./node_modules/sdp-transform/lib/grammar.js ***!
+  \***************************************************/
+/***/ ((module) => {
+
+var grammar = module.exports = {
+  v: [{
+    name: 'version',
+    reg: /^(\d*)$/
+  }],
+  o: [{
+    // o=- 20518 0 IN IP4 203.0.113.1
+    // NB: sessionId will be a String in most cases because it is huge
+    name: 'origin',
+    reg: /^(\S*) (\d*) (\d*) (\S*) IP(\d) (\S*)/,
+    names: ['username', 'sessionId', 'sessionVersion', 'netType', 'ipVer', 'address'],
+    format: '%s %s %d %s IP%d %s'
+  }],
+  // default parsing of these only (though some of these feel outdated)
+  s: [{ name: 'name' }],
+  i: [{ name: 'description' }],
+  u: [{ name: 'uri' }],
+  e: [{ name: 'email' }],
+  p: [{ name: 'phone' }],
+  z: [{ name: 'timezones' }], // TODO: this one can actually be parsed properly...
+  r: [{ name: 'repeats' }],   // TODO: this one can also be parsed properly
+  // k: [{}], // outdated thing ignored
+  t: [{
+    // t=0 0
+    name: 'timing',
+    reg: /^(\d*) (\d*)/,
+    names: ['start', 'stop'],
+    format: '%d %d'
+  }],
+  c: [{
+    // c=IN IP4 10.47.197.26
+    name: 'connection',
+    reg: /^IN IP(\d) (\S*)/,
+    names: ['version', 'ip'],
+    format: 'IN IP%d %s'
+  }],
+  b: [{
+    // b=AS:4000
+    push: 'bandwidth',
+    reg: /^(TIAS|AS|CT|RR|RS):(\d*)/,
+    names: ['type', 'limit'],
+    format: '%s:%s'
+  }],
+  m: [{
+    // m=video 51744 RTP/AVP 126 97 98 34 31
+    // NB: special - pushes to session
+    // TODO: rtp/fmtp should be filtered by the payloads found here?
+    reg: /^(\w*) (\d*) ([\w/]*)(?: (.*))?/,
+    names: ['type', 'port', 'protocol', 'payloads'],
+    format: '%s %d %s %s'
+  }],
+  a: [
+    {
+      // a=rtpmap:110 opus/48000/2
+      push: 'rtp',
+      reg: /^rtpmap:(\d*) ([\w\-.]*)(?:\s*\/(\d*)(?:\s*\/(\S*))?)?/,
+      names: ['payload', 'codec', 'rate', 'encoding'],
+      format: function (o) {
+        return (o.encoding)
+          ? 'rtpmap:%d %s/%s/%s'
+          : o.rate
+            ? 'rtpmap:%d %s/%s'
+            : 'rtpmap:%d %s';
+      }
+    },
+    {
+      // a=fmtp:108 profile-level-id=24;object=23;bitrate=64000
+      // a=fmtp:111 minptime=10; useinbandfec=1
+      push: 'fmtp',
+      reg: /^fmtp:(\d*) ([\S| ]*)/,
+      names: ['payload', 'config'],
+      format: 'fmtp:%d %s'
+    },
+    {
+      // a=control:streamid=0
+      name: 'control',
+      reg: /^control:(.*)/,
+      format: 'control:%s'
+    },
+    {
+      // a=rtcp:65179 IN IP4 193.84.77.194
+      name: 'rtcp',
+      reg: /^rtcp:(\d*)(?: (\S*) IP(\d) (\S*))?/,
+      names: ['port', 'netType', 'ipVer', 'address'],
+      format: function (o) {
+        return (o.address != null)
+          ? 'rtcp:%d %s IP%d %s'
+          : 'rtcp:%d';
+      }
+    },
+    {
+      // a=rtcp-fb:98 trr-int 100
+      push: 'rtcpFbTrrInt',
+      reg: /^rtcp-fb:(\*|\d*) trr-int (\d*)/,
+      names: ['payload', 'value'],
+      format: 'rtcp-fb:%s trr-int %d'
+    },
+    {
+      // a=rtcp-fb:98 nack rpsi
+      push: 'rtcpFb',
+      reg: /^rtcp-fb:(\*|\d*) ([\w-_]*)(?: ([\w-_]*))?/,
+      names: ['payload', 'type', 'subtype'],
+      format: function (o) {
+        return (o.subtype != null)
+          ? 'rtcp-fb:%s %s %s'
+          : 'rtcp-fb:%s %s';
+      }
+    },
+    {
+      // a=extmap:2 urn:ietf:params:rtp-hdrext:toffset
+      // a=extmap:1/recvonly URI-gps-string
+      // a=extmap:3 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:smpte-tc 25@600/24
+      push: 'ext',
+      reg: /^extmap:(\d+)(?:\/(\w+))?(?: (urn:ietf:params:rtp-hdrext:encrypt))? (\S*)(?: (\S*))?/,
+      names: ['value', 'direction', 'encrypt-uri', 'uri', 'config'],
+      format: function (o) {
+        return (
+          'extmap:%d' +
+          (o.direction ? '/%s' : '%v') +
+          (o['encrypt-uri'] ? ' %s' : '%v') +
+          ' %s' +
+          (o.config ? ' %s' : '')
+        );
+      }
+    },
+    {
+      // a=extmap-allow-mixed
+      name: 'extmapAllowMixed',
+      reg: /^(extmap-allow-mixed)/
+    },
+    {
+      // a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32
+      push: 'crypto',
+      reg: /^crypto:(\d*) ([\w_]*) (\S*)(?: (\S*))?/,
+      names: ['id', 'suite', 'config', 'sessionConfig'],
+      format: function (o) {
+        return (o.sessionConfig != null)
+          ? 'crypto:%d %s %s %s'
+          : 'crypto:%d %s %s';
+      }
+    },
+    {
+      // a=setup:actpass
+      name: 'setup',
+      reg: /^setup:(\w*)/,
+      format: 'setup:%s'
+    },
+    {
+      // a=connection:new
+      name: 'connectionType',
+      reg: /^connection:(new|existing)/,
+      format: 'connection:%s'
+    },
+    {
+      // a=mid:1
+      name: 'mid',
+      reg: /^mid:([^\s]*)/,
+      format: 'mid:%s'
+    },
+    {
+      // a=msid:0c8b064d-d807-43b4-b434-f92a889d8587 98178685-d409-46e0-8e16-7ef0db0db64a
+      name: 'msid',
+      reg: /^msid:(.*)/,
+      format: 'msid:%s'
+    },
+    {
+      // a=ptime:20
+      name: 'ptime',
+      reg: /^ptime:(\d*(?:\.\d*)*)/,
+      format: 'ptime:%d'
+    },
+    {
+      // a=maxptime:60
+      name: 'maxptime',
+      reg: /^maxptime:(\d*(?:\.\d*)*)/,
+      format: 'maxptime:%d'
+    },
+    {
+      // a=sendrecv
+      name: 'direction',
+      reg: /^(sendrecv|recvonly|sendonly|inactive)/
+    },
+    {
+      // a=ice-lite
+      name: 'icelite',
+      reg: /^(ice-lite)/
+    },
+    {
+      // a=ice-ufrag:F7gI
+      name: 'iceUfrag',
+      reg: /^ice-ufrag:(\S*)/,
+      format: 'ice-ufrag:%s'
+    },
+    {
+      // a=ice-pwd:x9cml/YzichV2+XlhiMu8g
+      name: 'icePwd',
+      reg: /^ice-pwd:(\S*)/,
+      format: 'ice-pwd:%s'
+    },
+    {
+      // a=fingerprint:SHA-1 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
+      name: 'fingerprint',
+      reg: /^fingerprint:(\S*) (\S*)/,
+      names: ['type', 'hash'],
+      format: 'fingerprint:%s %s'
+    },
+    {
+      // a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
+      // a=candidate:1162875081 1 udp 2113937151 192.168.34.75 60017 typ host generation 0 network-id 3 network-cost 10
+      // a=candidate:3289912957 2 udp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 generation 0 network-id 3 network-cost 10
+      // a=candidate:229815620 1 tcp 1518280447 192.168.150.19 60017 typ host tcptype active generation 0 network-id 3 network-cost 10
+      // a=candidate:3289912957 2 tcp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 tcptype passive generation 0 network-id 3 network-cost 10
+      push:'candidates',
+      reg: /^candidate:(\S*) (\d*) (\S*) (\d*) (\S*) (\d*) typ (\S*)(?: raddr (\S*) rport (\d*))?(?: tcptype (\S*))?(?: generation (\d*))?(?: network-id (\d*))?(?: network-cost (\d*))?/,
+      names: ['foundation', 'component', 'transport', 'priority', 'ip', 'port', 'type', 'raddr', 'rport', 'tcptype', 'generation', 'network-id', 'network-cost'],
+      format: function (o) {
+        var str = 'candidate:%s %d %s %d %s %d typ %s';
+
+        str += (o.raddr != null) ? ' raddr %s rport %d' : '%v%v';
+
+        // NB: candidate has three optional chunks, so %void middles one if it's missing
+        str += (o.tcptype != null) ? ' tcptype %s' : '%v';
+
+        if (o.generation != null) {
+          str += ' generation %d';
+        }
+
+        str += (o['network-id'] != null) ? ' network-id %d' : '%v';
+        str += (o['network-cost'] != null) ? ' network-cost %d' : '%v';
+        return str;
+      }
+    },
+    {
+      // a=end-of-candidates (keep after the candidates line for readability)
+      name: 'endOfCandidates',
+      reg: /^(end-of-candidates)/
+    },
+    {
+      // a=remote-candidates:1 203.0.113.1 54400 2 203.0.113.1 54401 ...
+      name: 'remoteCandidates',
+      reg: /^remote-candidates:(.*)/,
+      format: 'remote-candidates:%s'
+    },
+    {
+      // a=ice-options:google-ice
+      name: 'iceOptions',
+      reg: /^ice-options:(\S*)/,
+      format: 'ice-options:%s'
+    },
+    {
+      // a=ssrc:2566107569 cname:t9YU8M1UxTF8Y1A1
+      push: 'ssrcs',
+      reg: /^ssrc:(\d*) ([\w_-]*)(?::(.*))?/,
+      names: ['id', 'attribute', 'value'],
+      format: function (o) {
+        var str = 'ssrc:%d';
+        if (o.attribute != null) {
+          str += ' %s';
+          if (o.value != null) {
+            str += ':%s';
+          }
+        }
+        return str;
+      }
+    },
+    {
+      // a=ssrc-group:FEC 1 2
+      // a=ssrc-group:FEC-FR 3004364195 1080772241
+      push: 'ssrcGroups',
+      // token-char = %x21 / %x23-27 / %x2A-2B / %x2D-2E / %x30-39 / %x41-5A / %x5E-7E
+      reg: /^ssrc-group:([\x21\x23\x24\x25\x26\x27\x2A\x2B\x2D\x2E\w]*) (.*)/,
+      names: ['semantics', 'ssrcs'],
+      format: 'ssrc-group:%s %s'
+    },
+    {
+      // a=msid-semantic: WMS Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV
+      name: 'msidSemantic',
+      reg: /^msid-semantic:\s?(\w*) (\S*)/,
+      names: ['semantic', 'token'],
+      format: 'msid-semantic: %s %s' // space after ':' is not accidental
+    },
+    {
+      // a=group:BUNDLE audio video
+      push: 'groups',
+      reg: /^group:(\w*) (.*)/,
+      names: ['type', 'mids'],
+      format: 'group:%s %s'
+    },
+    {
+      // a=rtcp-mux
+      name: 'rtcpMux',
+      reg: /^(rtcp-mux)/
+    },
+    {
+      // a=rtcp-rsize
+      name: 'rtcpRsize',
+      reg: /^(rtcp-rsize)/
+    },
+    {
+      // a=sctpmap:5000 webrtc-datachannel 1024
+      name: 'sctpmap',
+      reg: /^sctpmap:([\w_/]*) (\S*)(?: (\S*))?/,
+      names: ['sctpmapNumber', 'app', 'maxMessageSize'],
+      format: function (o) {
+        return (o.maxMessageSize != null)
+          ? 'sctpmap:%s %s %s'
+          : 'sctpmap:%s %s';
+      }
+    },
+    {
+      // a=x-google-flag:conference
+      name: 'xGoogleFlag',
+      reg: /^x-google-flag:([^\s]*)/,
+      format: 'x-google-flag:%s'
+    },
+    {
+      // a=rid:1 send max-width=1280;max-height=720;max-fps=30;depend=0
+      push: 'rids',
+      reg: /^rid:([\d\w]+) (\w+)(?: ([\S| ]*))?/,
+      names: ['id', 'direction', 'params'],
+      format: function (o) {
+        return (o.params) ? 'rid:%s %s %s' : 'rid:%s %s';
+      }
+    },
+    {
+      // a=imageattr:97 send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320] recv [x=330,y=250]
+      // a=imageattr:* send [x=800,y=640] recv *
+      // a=imageattr:100 recv [x=320,y=240]
+      push: 'imageattrs',
+      reg: new RegExp(
+        // a=imageattr:97
+        '^imageattr:(\\d+|\\*)' +
+        // send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320]
+        '[\\s\\t]+(send|recv)[\\s\\t]+(\\*|\\[\\S+\\](?:[\\s\\t]+\\[\\S+\\])*)' +
+        // recv [x=330,y=250]
+        '(?:[\\s\\t]+(recv|send)[\\s\\t]+(\\*|\\[\\S+\\](?:[\\s\\t]+\\[\\S+\\])*))?'
+      ),
+      names: ['pt', 'dir1', 'attrs1', 'dir2', 'attrs2'],
+      format: function (o) {
+        return 'imageattr:%s %s %s' + (o.dir2 ? ' %s %s' : '');
+      }
+    },
+    {
+      // a=simulcast:send 1,2,3;~4,~5 recv 6;~7,~8
+      // a=simulcast:recv 1;4,5 send 6;7
+      name: 'simulcast',
+      reg: new RegExp(
+        // a=simulcast:
+        '^simulcast:' +
+        // send 1,2,3;~4,~5
+        '(send|recv) ([a-zA-Z0-9\\-_~;,]+)' +
+        // space + recv 6;~7,~8
+        '(?:\\s?(send|recv) ([a-zA-Z0-9\\-_~;,]+))?' +
+        // end
+        '$'
+      ),
+      names: ['dir1', 'list1', 'dir2', 'list2'],
+      format: function (o) {
+        return 'simulcast:%s %s' + (o.dir2 ? ' %s %s' : '');
+      }
+    },
+    {
+      // old simulcast draft 03 (implemented by Firefox)
+      //   https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast-03
+      // a=simulcast: recv pt=97;98 send pt=97
+      // a=simulcast: send rid=5;6;7 paused=6,7
+      name: 'simulcast_03',
+      reg: /^simulcast:[\s\t]+([\S+\s\t]+)$/,
+      names: ['value'],
+      format: 'simulcast: %s'
+    },
+    {
+      // a=framerate:25
+      // a=framerate:29.97
+      name: 'framerate',
+      reg: /^framerate:(\d+(?:$|\.\d+))/,
+      format: 'framerate:%s'
+    },
+    {
+      // RFC4570
+      // a=source-filter: incl IN IP4 239.5.2.31 10.1.15.5
+      name: 'sourceFilter',
+      reg: /^source-filter: *(excl|incl) (\S*) (IP4|IP6|\*) (\S*) (.*)/,
+      names: ['filterMode', 'netType', 'addressTypes', 'destAddress', 'srcList'],
+      format: 'source-filter: %s %s %s %s %s'
+    },
+    {
+      // a=bundle-only
+      name: 'bundleOnly',
+      reg: /^(bundle-only)/
+    },
+    {
+      // a=label:1
+      name: 'label',
+      reg: /^label:(.+)/,
+      format: 'label:%s'
+    },
+    {
+      // RFC version 26 for SCTP over DTLS
+      // https://tools.ietf.org/html/draft-ietf-mmusic-sctp-sdp-26#section-5
+      name: 'sctpPort',
+      reg: /^sctp-port:(\d+)$/,
+      format: 'sctp-port:%s'
+    },
+    {
+      // RFC version 26 for SCTP over DTLS
+      // https://tools.ietf.org/html/draft-ietf-mmusic-sctp-sdp-26#section-6
+      name: 'maxMessageSize',
+      reg: /^max-message-size:(\d+)$/,
+      format: 'max-message-size:%s'
+    },
+    {
+      // RFC7273
+      // a=ts-refclk:ptp=IEEE1588-2008:39-A7-94-FF-FE-07-CB-D0:37
+      push:'tsRefClocks',
+      reg: /^ts-refclk:([^\s=]*)(?:=(\S*))?/,
+      names: ['clksrc', 'clksrcExt'],
+      format: function (o) {
+        return 'ts-refclk:%s' + (o.clksrcExt != null ? '=%s' : '');
+      }
+    },
+    {
+      // RFC7273
+      // a=mediaclk:direct=963214424
+      name:'mediaClk',
+      reg: /^mediaclk:(?:id=(\S*))? *([^\s=]*)(?:=(\S*))?(?: *rate=(\d+)\/(\d+))?/,
+      names: ['id', 'mediaClockName', 'mediaClockValue', 'rateNumerator', 'rateDenominator'],
+      format: function (o) {
+        var str = 'mediaclk:';
+        str += (o.id != null ? 'id=%s %s' : '%v%s');
+        str += (o.mediaClockValue != null ? '=%s' : '');
+        str += (o.rateNumerator != null ? ' rate=%s' : '');
+        str += (o.rateDenominator != null ? '/%s' : '');
+        return str;
+      }
+    },
+    {
+      // a=keywds:keywords
+      name: 'keywords',
+      reg: /^keywds:(.+)$/,
+      format: 'keywds:%s'
+    },
+    {
+      // a=content:main
+      name: 'content',
+      reg: /^content:(.+)/,
+      format: 'content:%s'
+    },
+    // BFCP https://tools.ietf.org/html/rfc4583
+    {
+      // a=floorctrl:c-s
+      name: 'bfcpFloorCtrl',
+      reg: /^floorctrl:(c-only|s-only|c-s)/,
+      format: 'floorctrl:%s'
+    },
+    {
+      // a=confid:1
+      name: 'bfcpConfId',
+      reg: /^confid:(\d+)/,
+      format: 'confid:%s'
+    },
+    {
+      // a=userid:1
+      name: 'bfcpUserId',
+      reg: /^userid:(\d+)/,
+      format: 'userid:%s'
+    },
+    {
+      // a=floorid:1
+      name: 'bfcpFloorId',
+      reg: /^floorid:(.+) (?:m-stream|mstrm):(.+)/,
+      names: ['id', 'mStream'],
+      format: 'floorid:%s mstrm:%s'
+    },
+    {
+      // any a= that we don't understand is kept verbatim on media.invalid
+      push: 'invalid',
+      names: ['value']
+    }
+  ]
+};
+
+// set sensible defaults to avoid polluting the grammar with boring details
+Object.keys(grammar).forEach(function (key) {
+  var objs = grammar[key];
+  objs.forEach(function (obj) {
+    if (!obj.reg) {
+      obj.reg = /(.*)/;
+    }
+    if (!obj.format) {
+      obj.format = '%s';
+    }
+  });
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/sdp-transform/lib/index.js":
 /*!*************************************************!*\
   !*** ./node_modules/sdp-transform/lib/index.js ***!
   \*************************************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-throw new Error("Module build failed: Error: ENOENT: no such file or directory, open 'C:\\2\\CoMagic\\3\\node_modules\\sdp-transform\\lib\\index.js'");
+var parser = __webpack_require__(/*! ./parser */ "./node_modules/sdp-transform/lib/parser.js");
+var writer = __webpack_require__(/*! ./writer */ "./node_modules/sdp-transform/lib/writer.js");
+
+exports.write = writer;
+exports.parse = parser.parse;
+exports.parseParams = parser.parseParams;
+exports.parseFmtpConfig = parser.parseFmtpConfig; // Alias of parseParams().
+exports.parsePayloads = parser.parsePayloads;
+exports.parseRemoteCandidates = parser.parseRemoteCandidates;
+exports.parseImageAttributes = parser.parseImageAttributes;
+exports.parseSimulcastStreamList = parser.parseSimulcastStreamList;
+
+
+/***/ }),
+
+/***/ "./node_modules/sdp-transform/lib/parser.js":
+/*!**************************************************!*\
+  !*** ./node_modules/sdp-transform/lib/parser.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+var toIntIfInt = function (v) {
+  return String(Number(v)) === v ? Number(v) : v;
+};
+
+var attachProperties = function (match, location, names, rawName) {
+  if (rawName && !names) {
+    location[rawName] = toIntIfInt(match[1]);
+  }
+  else {
+    for (var i = 0; i < names.length; i += 1) {
+      if (match[i+1] != null) {
+        location[names[i]] = toIntIfInt(match[i+1]);
+      }
+    }
+  }
+};
+
+var parseReg = function (obj, location, content) {
+  var needsBlank = obj.name && obj.names;
+  if (obj.push && !location[obj.push]) {
+    location[obj.push] = [];
+  }
+  else if (needsBlank && !location[obj.name]) {
+    location[obj.name] = {};
+  }
+  var keyLocation = obj.push ?
+    {} :  // blank object that will be pushed
+    needsBlank ? location[obj.name] : location; // otherwise, named location or root
+
+  attachProperties(content.match(obj.reg), keyLocation, obj.names, obj.name);
+
+  if (obj.push) {
+    location[obj.push].push(keyLocation);
+  }
+};
+
+var grammar = __webpack_require__(/*! ./grammar */ "./node_modules/sdp-transform/lib/grammar.js");
+var validLine = RegExp.prototype.test.bind(/^([a-z])=(.*)/);
+
+exports.parse = function (sdp) {
+  var session = {}
+    , media = []
+    , location = session; // points at where properties go under (one of the above)
+
+  // parse lines we understand
+  sdp.split(/(\r\n|\r|\n)/).filter(validLine).forEach(function (l) {
+    var type = l[0];
+    var content = l.slice(2);
+    if (type === 'm') {
+      media.push({rtp: [], fmtp: []});
+      location = media[media.length-1]; // point at latest media line
+    }
+
+    for (var j = 0; j < (grammar[type] || []).length; j += 1) {
+      var obj = grammar[type][j];
+      if (obj.reg.test(content)) {
+        return parseReg(obj, location, content);
+      }
+    }
+  });
+
+  session.media = media; // link it up
+  return session;
+};
+
+var paramReducer = function (acc, expr) {
+  var s = expr.split(/=(.+)/, 2);
+  if (s.length === 2) {
+    acc[s[0]] = toIntIfInt(s[1]);
+  } else if (s.length === 1 && expr.length > 1) {
+    acc[s[0]] = undefined;
+  }
+  return acc;
+};
+
+exports.parseParams = function (str) {
+  return str.split(/;\s?/).reduce(paramReducer, {});
+};
+
+// For backward compatibility - alias will be removed in 3.0.0
+exports.parseFmtpConfig = exports.parseParams;
+
+exports.parsePayloads = function (str) {
+  return str.toString().split(' ').map(Number);
+};
+
+exports.parseRemoteCandidates = function (str) {
+  var candidates = [];
+  var parts = str.split(' ').map(toIntIfInt);
+  for (var i = 0; i < parts.length; i += 3) {
+    candidates.push({
+      component: parts[i],
+      ip: parts[i + 1],
+      port: parts[i + 2]
+    });
+  }
+  return candidates;
+};
+
+exports.parseImageAttributes = function (str) {
+  return str.split(' ').map(function (item) {
+    return item.substring(1, item.length-1).split(',').reduce(paramReducer, {});
+  });
+};
+
+exports.parseSimulcastStreamList = function (str) {
+  return str.split(';').map(function (stream) {
+    return stream.split(',').map(function (format) {
+      var scid, paused = false;
+
+      if (format[0] !== '~') {
+        scid = toIntIfInt(format);
+      } else {
+        scid = toIntIfInt(format.substring(1, format.length));
+        paused = true;
+      }
+
+      return {
+        scid: scid,
+        paused: paused
+      };
+    });
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/sdp-transform/lib/writer.js":
+/*!**************************************************!*\
+  !*** ./node_modules/sdp-transform/lib/writer.js ***!
+  \**************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var grammar = __webpack_require__(/*! ./grammar */ "./node_modules/sdp-transform/lib/grammar.js");
+
+// customized util.format - discards excess arguments and can void middle ones
+var formatRegExp = /%[sdv%]/g;
+var format = function (formatStr) {
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  return formatStr.replace(formatRegExp, function (x) {
+    if (i >= len) {
+      return x; // missing argument
+    }
+    var arg = args[i];
+    i += 1;
+    switch (x) {
+    case '%%':
+      return '%';
+    case '%s':
+      return String(arg);
+    case '%d':
+      return Number(arg);
+    case '%v':
+      return '';
+    }
+  });
+  // NB: we discard excess arguments - they are typically undefined from makeLine
+};
+
+var makeLine = function (type, obj, location) {
+  var str = obj.format instanceof Function ?
+    (obj.format(obj.push ? location : location[obj.name])) :
+    obj.format;
+
+  var args = [type + '=' + str];
+  if (obj.names) {
+    for (var i = 0; i < obj.names.length; i += 1) {
+      var n = obj.names[i];
+      if (obj.name) {
+        args.push(location[obj.name][n]);
+      }
+      else { // for mLine and push attributes
+        args.push(location[obj.names[i]]);
+      }
+    }
+  }
+  else {
+    args.push(location[obj.name]);
+  }
+  return format.apply(null, args);
+};
+
+// RFC specified order
+// TODO: extend this with all the rest
+var defaultOuterOrder = [
+  'v', 'o', 's', 'i',
+  'u', 'e', 'p', 'c',
+  'b', 't', 'r', 'z', 'a'
+];
+var defaultInnerOrder = ['i', 'c', 'b', 'a'];
+
+
+module.exports = function (session, opts) {
+  opts = opts || {};
+  // ensure certain properties exist
+  if (session.version == null) {
+    session.version = 0; // 'v=0' must be there (only defined version atm)
+  }
+  if (session.name == null) {
+    session.name = ' '; // 's= ' must be there if no meaningful name set
+  }
+  session.media.forEach(function (mLine) {
+    if (mLine.payloads == null) {
+      mLine.payloads = '';
+    }
+  });
+
+  var outerOrder = opts.outerOrder || defaultOuterOrder;
+  var innerOrder = opts.innerOrder || defaultInnerOrder;
+  var sdp = [];
+
+  // loop through outerOrder for matching properties on session
+  outerOrder.forEach(function (type) {
+    grammar[type].forEach(function (obj) {
+      if (obj.name in session && session[obj.name] != null) {
+        sdp.push(makeLine(type, obj, session));
+      }
+      else if (obj.push in session && session[obj.push] != null) {
+        session[obj.push].forEach(function (el) {
+          sdp.push(makeLine(type, obj, el));
+        });
+      }
+    });
+  });
+
+  // then for each media line, follow the innerOrder
+  session.media.forEach(function (mLine) {
+    sdp.push(makeLine('m', grammar.m[0], mLine));
+
+    innerOrder.forEach(function (type) {
+      grammar[type].forEach(function (obj) {
+        if (obj.name in mLine && mLine[obj.name] != null) {
+          sdp.push(makeLine(type, obj, mLine));
+        }
+        else if (obj.push in mLine && mLine[obj.push] != null) {
+          mLine[obj.push].forEach(function (el) {
+            sdp.push(makeLine(type, obj, el));
+          });
+        }
+      });
+    });
+  });
+
+  return sdp.join('\r\n') + '\r\n';
+};
+
 
 /***/ }),
 
@@ -26612,206 +28902,12 @@ module.exports = /*#__PURE__*/JSON.parse('{"name":"jssip","title":"JsSIP","descr
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-/*!*******************!*\
-  !*** ./script.js ***!
-  \*******************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var jssip__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jssip */ "./node_modules/jssip/lib-es5/JsSIP.js");
-/* harmony import */ var jssip__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jssip__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app.js */ "./app.js");
-
-
-(0,_app_js__WEBPACK_IMPORTED_MODULE_1__.renderFirstScreen)();
-var socket = new jssip__WEBPACK_IMPORTED_MODULE_0__.WebSocketInterface("wss:/voip.uiscom.ru");
-console.log(socket);
-var configuration = {
-  sockets: [socket],
-  uri: "sip:0344302@voip.uiscom.ru",
-  password: "FYCpwA_3Bc",
-  sessionDescriptionHandlerFactoryOptions: {
-    constraints: {
-      audio: true,
-      video: true
-    }
-  }
-};
-var coolPhone = new jssip__WEBPACK_IMPORTED_MODULE_0__.UA(configuration);
-console.log(coolPhone);
-coolPhone.on("connected", function (e) {
-  console.log("connected");
-});
-coolPhone.on("disconnected", function (e) {
-  console.log(disconnected);
-});
-var session;
-coolPhone.on("newRTCSession", function (data) {
-  session = data.session;
-  console.log("session");
-  console.log(session);
-  session.on("accepted", function () {
-    console.log("accepted");
-  });
-  session.on("ended", function () {
-    console.log("ended");
-  });
-});
-coolPhone.start();
-window.addEventListener("keydown", function (e) {
-  if (e.key === "o") receiveCall();
-});
-function receiveCall() {
-  console.log("receiveCall");
-  if (session) {
-    console.log(session.direction);
-    session.answer();
-  }
-}
-function callPhone() {
-  console.log("callPhone");
-  var eventHandlers = {
-    progress: function progress(e) {
-      console.log("call is in progress");
-    },
-    failed: function failed(e) {
-      console.log("call failed with cause: " + e.data.cause);
-    },
-    ended: function ended(e) {
-      console.log("call ended with cause: " + e.data.cause);
-    },
-    confirmed: function confirmed(e) {
-      console.log("call confirmed");
-    }
-  };
-  var options = {
-    eventHandlers: eventHandlers,
-    mediaConstraints: {
-      audio: true,
-      video: false
-    },
-    rtcOfferConstraints: {
-      offerToReceiveAudio: true,
-      offerToReceiveVideo: false
-    },
-    pcConfig: {
-      iceServers: [{
-        urls: ["stun:a.example.com", "stun:b.example.com"]
-      }, {
-        urls: "turn:example.com",
-        username: "foo",
-        credential: " 1234"
-      }]
-    }
-  };
-  coolPhone.call("sip:0344301@voip.uiscom.ru", options);
-
-  //coolPhone.call();
-  // coolPhone.call("0344301");
-  // //const testCall = session.call("0344301");
-  // session.on("accepted", () => {
-  //   console.log("testCallaccepted");
-  // });
-  // session.on("ended", () => {
-  //   console.log("testCallended");
-  // });
-}
-window.application = {
-  blocks: {},
-  screens: {},
-  renderScreen: function renderScreen(screenName) {
-    var app = document.querySelector(".app");
-    app.textContent = "";
-    var main = document.createElement("div");
-    main.classList.add("main");
-    app.appendChild(main);
-    if (this.screens[screenName]) {
-      this.screens[screenName](main);
-    }
-  },
-  renderBlock: function renderBlock(blockName, container) {
-    this.blocks[blockName](container);
-  }
-  /*
-  timers: [],
-  token: '',
-  listPlayers: [],
-  rival: ''*/
-  //login: "",
-  //password: "",
-};
-function renderPhoneButton(container) {
-  var button = document.createElement("button");
-  button.textContent = "Позвонить";
-  button.classList.add("phone__btn");
-  button.addEventListener("click", function () {
-    callPhone();
-    //console.log("phone");
-  });
-  container.appendChild(button);
-}
-window.application.blocks["phone-button"] = renderPhoneButton;
-function renderExitButton(container) {
-  var button = document.createElement("button");
-  button.textContent = "Выйти";
-  button.classList.add("exit__btn");
-  // console.log("render_exit");
-  button.addEventListener("click", function () {
-    console.log("click_crear");
-    (0,_app_js__WEBPACK_IMPORTED_MODULE_1__.clearLoginPassword)();
-    window.application.renderScreen("authorization");
-  });
-  container.appendChild(button);
-}
-window.application.blocks["exit-button"] = renderExitButton;
-function renderAuthorizationButton(container) {
-  var button = document.createElement("button");
-  button.textContent = "Войти";
-  button.classList.add("authorization__btn");
-  var loginIn = document.querySelector(".authorization__login");
-  var passwordIn = document.querySelector(".authorization__password");
-  button.addEventListener("click", function () {
-    var login = loginIn.value.trim();
-    var password = passwordIn.value.trim();
-    (0,_app_js__WEBPACK_IMPORTED_MODULE_1__.setLoginPassword)(login, password);
-    window.application.renderScreen("phone");
-  });
-  container.appendChild(button);
-}
-window.application.blocks["authorization-button"] = renderAuthorizationButton;
-
-/////////
-function renderAuthorizationScreen(container) {
-  var formAuto = document.createElement("div");
-  formAuto.classList.add("authorization");
-  container.appendChild(formAuto);
-  var login = document.createElement("input");
-  login.type = "text";
-  login.placeholder = "Логин";
-  login.classList.add("authorization__login");
-  formAuto.appendChild(login);
-  var password = document.createElement("input");
-  password.type = "text";
-  password.placeholder = "Пароль";
-  password.classList.add("authorization__password");
-  formAuto.appendChild(password);
-  window.application.renderBlock("authorization-button", formAuto);
-}
-window.application.screens["authorization"] = renderAuthorizationScreen;
-function renderPhone(container) {
-  var phone = document.createElement("div");
-  phone.classList.add("phone");
-  container.appendChild(phone);
-  window.application.renderBlock("phone-button", phone);
-  window.application.renderBlock("exit-button", phone);
-}
-window.application.screens["phone"] = renderPhone;
-
-/////
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__("./script.js");
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=bundle.js.map
