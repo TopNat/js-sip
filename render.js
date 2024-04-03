@@ -3,32 +3,82 @@ import {
   setLoginPassword,
   callPhone,
   receiveCall,
+  greenButton,
+  redButton,
+  selectNumber,
+  createUA,
 } from "./script.js";
 
-//отрисовка кнопки завершения вызова
+//информация о звонке
+export function setCallInfo(user, time) {
+  const listCall = chrome.storage.local.get({ callInfo: [] }, (data) => {
+    let listCallInfo = data.callInfo.slice(-9);
+    listCallInfo.push({ user, time });
+    chrome.storage.local.set({ callInfo: listCallInfo });
+  });
+  console.log(user);
+  const listCallDiv = document.querySelector(".listCallDiv");
+  window.application.renderBlock("call_info", listCallDiv);
+}
+
+//выводим историю звонков
+export function getCallInfo() {
+  console.log("getCallInfo");
+  const listCall = chrome.storage.local.get({ callInfo: [] }, (data) => {
+    //console.log(data.callInfo);
+    const listCallDivItem = document.querySelector(".listCallDivItem");
+    listCallDivItem.textContent = "";
+    const calls = data.callInfo.reverse();
+    calls.map((item) => {
+      const divCall = document.createElement("div");
+      divCall.classList.add("divCallItem");
+      listCallDivItem.appendChild(divCall);
+      divCall.addEventListener("click", () => selectNumber(item.user));
+
+      const divUserCall = document.createElement("divUser");
+      divUserCall.textContent = item.user;
+      divCall.appendChild(divUserCall);
+
+      const divTimeCall = document.createElement("divTime");
+      divTimeCall.textContent = item.time;
+      divCall.appendChild(divTimeCall);
+      console.log("render" + item);
+    });
+  });
+}
+
+//красная кнопка
 export function renderEndedButton(container) {
   const button = document.createElement("button");
-  //button.textContent = "Завершить вызов";
   button.classList.add("phone__btn_ended");
 
-  button.addEventListener("click", () => {
-    // receiveCall();
-    //console.log("phone");
-  });
+  //   button.addEventListener("click", () => {
+  //     redButton();
+  //   });
   container.appendChild(button);
 }
 
-//отрисовка блока при входящем звонке
-export function renderIncomingCall(container) {
+//зеленая кнопка
+export function renderPhoneButton(container) {
   const button = document.createElement("button");
-  //button.textContent = "Ответить";
   button.classList.add("phone__btn_answer");
+  //button.setAttribute("disabled", "true");
 
-  button.addEventListener("click", () => {
-    receiveCall();
-    //console.log("phone");
-  });
+  //   button.addEventListener("click", () => {
+  //     greenButton();
+  //   });
   container.appendChild(button);
+}
+
+//отрисовка нижнего блока кнопок
+export function renderBlockButton(container) {
+  const divFooter = document.createElement("div");
+  divFooter.classList.add("div_footer_button");
+  container.appendChild(divFooter);
+
+  window.application.renderBlock("phone-button", divFooter);
+  window.application.renderBlock("ended-button", divFooter);
+  window.application.renderBlock("exit-button", divFooter);
 }
 
 //изменение статуса звонка
@@ -37,29 +87,14 @@ export function setMessage(message) {
   messageSpan.textContent = message;
 }
 
-//отрисовка блока исходящего звонка
-export function renderPhoneButton(container) {
-  const button = document.createElement("button");
-  button.textContent = "Позвонить";
-  button.classList.add("phone__btn");
-
-  button.addEventListener("click", () => {
-    callPhone();
-    //console.log("phone");
-  });
-  container.appendChild(button);
-}
-
 //отрисовка кнопки выхода
 export function renderExitButton(container) {
   const button = document.createElement("button");
-  //button.textContent = "Выйти";
   button.classList.add("exit__btn");
-  // console.log("render_exit");
+
   button.addEventListener("click", () => {
     console.log("click_crear");
     clearLoginPassword();
-    //const app = document.querySelector(".app");
     window.application.renderScreen("authorization");
   });
   container.appendChild(button);
@@ -73,12 +108,14 @@ export function renderAuthorizationButton(container) {
 
   const loginIn = document.querySelector(".authorization__login");
   const passwordIn = document.querySelector(".authorization__password");
-  //const app = document.querySelector(".app");
+  const serverIn = document.querySelector(".authorization__server");
 
   button.addEventListener("click", () => {
     const login = loginIn.value.trim();
     const password = passwordIn.value.trim();
-    setLoginPassword(login, password);
+    const server = serverIn.value.trim();
+
+    setLoginPassword(login, password, server);
     window.application.renderScreen("phone");
   });
   container.appendChild(button);
@@ -95,11 +132,18 @@ export function renderAuthorizationScreen(container) {
   login.placeholder = "Логин";
   login.classList.add("authorization__login");
   formAuto.appendChild(login);
+
   const password = document.createElement("input");
   password.type = "text";
   password.placeholder = "Пароль";
   password.classList.add("authorization__password");
   formAuto.appendChild(password);
+
+  const server = document.createElement("input");
+  server.type = "text";
+  server.placeholder = "Сервер";
+  server.classList.add("authorization__server");
+  formAuto.appendChild(server);
 
   window.application.renderBlock("authorization-button", formAuto);
 }
@@ -127,6 +171,19 @@ export function renderPhone(container) {
   phone.classList.add("phone");
   container.appendChild(phone);
 
+  const localAudio = document.createElement("audio");
+  localAudio.classList.add("localAudio");
+  localAudio.setAttribute("autoPlay", true);
+  localAudio.setAttribute("muted", true);
+  container.appendChild(localAudio);
+
+
+  const remoteAudio = document.createElement("audio");
+  remoteAudio.classList.add("remoteAudio");
+  remoteAudio.setAttribute("autoPlay", true);
+  remoteAudio.setAttribute("muted", true);
+  container.appendChild(remoteAudio);
+
   const listCallDiv = document.createElement("div");
   listCallDiv.classList.add("listCallDiv");
   phone.appendChild(listCallDiv);
@@ -136,6 +193,15 @@ export function renderPhone(container) {
   listCallTitle.textContent = "Список звонков";
   listCallDiv.appendChild(listCallTitle);
 
+  const listCallDivItem = document.createElement("div");
+  listCallDivItem.classList.add("listCallDivItem");
+  listCallDiv.appendChild(listCallDivItem);
+
+  //getCallInfo();
+  // const listCallDivItem = document.querySelector(".listCallDivItem");
+  //listCallDivItem.textContent = "";
+  window.application.renderBlock("call_info", listCallDiv);
+
   const ButtonCallDiv = document.createElement("div");
   ButtonCallDiv.classList.add("ButtonCallDiv");
   phone.appendChild(ButtonCallDiv);
@@ -144,11 +210,22 @@ export function renderPhone(container) {
   callDiv.classList.add("callDiv");
   ButtonCallDiv.appendChild(callDiv);
 
+  const callInputLabel = document.createElement("span");
+  callInputLabel.textContent = "Номер";
+  callDiv.appendChild(callInputLabel);
+
   const callInput = document.createElement("input");
   callInput.classList.add("callInput");
   callDiv.appendChild(callInput);
+  /*
+  callInput.addEventListener("click", () => {
+    const btn = document.querySelector(".phone__btn_answer");
+    btn.setAttribute("disabled", "false");
+
+    console.log("click");
+  });*/
 
   window.application.renderBlock("status-call", ButtonCallDiv);
-  window.application.renderBlock("phone-button", callDiv);
-  window.application.renderBlock("exit-button", ButtonCallDiv);
+  window.application.renderBlock("button-footer", ButtonCallDiv);
+  createUA();
 }
