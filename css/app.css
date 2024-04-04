@@ -114,3 +114,12 @@
     background-color: #808080;
     color: #fff;
 }
+
+.messageError {
+    color: red;
+}
+
+.messageDiv {
+    display: flex;
+    justify-content: space-between;
+}

@@ -38,19 +38,16 @@ function setCallInfo(user, time) {
     chrome.storage.local.set({
       callInfo: listCallInfo
     });
+    var listCallDiv = document.querySelector(".listCallDiv");
+    window.application.renderBlock("call_info", listCallDiv);
   });
-  console.log(user);
-  var listCallDiv = document.querySelector(".listCallDiv");
-  window.application.renderBlock("call_info", listCallDiv);
 }
 
 //выводим историю звонков
 function getCallInfo() {
-  console.log("getCallInfo");
   var listCall = chrome.storage.local.get({
     callInfo: []
   }, function (data) {
-    //console.log(data.callInfo);
     var listCallDivItem = document.querySelector(".listCallDivItem");
     listCallDivItem.textContent = "";
     var calls = data.callInfo.reverse();
@@ -67,7 +64,6 @@ function getCallInfo() {
       var divTimeCall = document.createElement("divTime");
       divTimeCall.textContent = item.time;
       divCall.appendChild(divTimeCall);
-      console.log("render" + item);
     });
   });
 }
@@ -76,10 +72,6 @@ function getCallInfo() {
 function renderEndedButton(container) {
   var button = document.createElement("button");
   button.classList.add("phone__btn_ended");
-
-  //   button.addEventListener("click", () => {
-  //     redButton();
-  //   });
   container.appendChild(button);
 }
 
@@ -87,11 +79,6 @@ function renderEndedButton(container) {
 function renderPhoneButton(container) {
   var button = document.createElement("button");
   button.classList.add("phone__btn_answer");
-  //button.setAttribute("disabled", "true");
-
-  //   button.addEventListener("click", () => {
-  //     greenButton();
-  //   });
   container.appendChild(button);
 }
 
@@ -115,11 +102,6 @@ function setMessage(message) {
 function renderExitButton(container) {
   var button = document.createElement("button");
   button.classList.add("exit__btn");
-  button.addEventListener("click", function () {
-    console.log("click_crear");
-    (0,_script_js__WEBPACK_IMPORTED_MODULE_0__.clearLoginPassword)();
-    window.application.renderScreen("authorization");
-  });
   container.appendChild(button);
 }
 
@@ -135,8 +117,13 @@ function renderAuthorizationButton(container) {
     var login = loginIn.value.trim();
     var password = passwordIn.value.trim();
     var server = serverIn.value.trim();
-    (0,_script_js__WEBPACK_IMPORTED_MODULE_0__.setLoginPassword)(login, password, server);
-    window.application.renderScreen("phone");
+    if (login && password && server) {
+      (0,_script_js__WEBPACK_IMPORTED_MODULE_0__.setLoginPassword)(login, password, server);
+      window.application.renderScreen("phone");
+    } else {
+      var mes = document.querySelector(".messageError");
+      mes.textContent = "Введите учетные данные";
+    }
   });
   container.appendChild(button);
 }
@@ -146,6 +133,9 @@ function renderAuthorizationScreen(container) {
   var formAuto = document.createElement("div");
   formAuto.classList.add("authorization");
   container.appendChild(formAuto);
+  var message = document.createElement("span");
+  message.classList.add("messageError");
+  formAuto.appendChild(message);
   var login = document.createElement("input");
   login.type = "text";
   login.placeholder = "Логин";
@@ -177,6 +167,10 @@ function renderStatusCall(container) {
   messageSpan.classList.add("messageSpan");
   messageSpan.textContent = "";
   messageDiv.appendChild(messageSpan);
+  var messageTimeSpan = document.createElement("span");
+  messageTimeSpan.classList.add("messageTimeSpan");
+  messageTimeSpan.textContent = "  ";
+  messageDiv.appendChild(messageTimeSpan);
 }
 
 //отрисовка блока основного экрана
@@ -187,12 +181,10 @@ function renderPhone(container) {
   var localAudio = document.createElement("audio");
   localAudio.classList.add("localAudio");
   localAudio.setAttribute("autoPlay", true);
-  localAudio.setAttribute("muted", true);
   container.appendChild(localAudio);
   var remoteAudio = document.createElement("audio");
   remoteAudio.classList.add("remoteAudio");
   remoteAudio.setAttribute("autoPlay", true);
-  remoteAudio.setAttribute("muted", true);
   container.appendChild(remoteAudio);
   var listCallDiv = document.createElement("div");
   listCallDiv.classList.add("listCallDiv");
@@ -204,10 +196,6 @@ function renderPhone(container) {
   var listCallDivItem = document.createElement("div");
   listCallDivItem.classList.add("listCallDivItem");
   listCallDiv.appendChild(listCallDivItem);
-
-  //getCallInfo();
-  // const listCallDivItem = document.querySelector(".listCallDivItem");
-  //listCallDivItem.textContent = "";
   window.application.renderBlock("call_info", listCallDiv);
   var ButtonCallDiv = document.createElement("div");
   ButtonCallDiv.classList.add("ButtonCallDiv");
@@ -221,13 +209,6 @@ function renderPhone(container) {
   var callInput = document.createElement("input");
   callInput.classList.add("callInput");
   callDiv.appendChild(callInput);
-  /*
-  callInput.addEventListener("click", () => {
-    const btn = document.querySelector(".phone__btn_answer");
-    btn.setAttribute("disabled", "false");
-      console.log("click");
-  });*/
-
   window.application.renderBlock("status-call", ButtonCallDiv);
   window.application.renderBlock("button-footer", ButtonCallDiv);
   (0,_script_js__WEBPACK_IMPORTED_MODULE_0__.createUA)();
@@ -264,26 +245,21 @@ window.application = {
   blocks: {},
   screens: {},
   renderScreen: function renderScreen(screenName) {
-    //console.log(screenName);
     var app = document.querySelector(".app");
     app.textContent = "";
     var main = document.createElement("div");
     main.classList.add("main");
     app.appendChild(main);
-    //console.log(this.screens[screenName]);
     if (this.screens[screenName]) {
       this.screens[screenName](main);
     }
   },
   renderBlock: function renderBlock(blockName, container) {
-    //console.log("block");
-    //console.log(blockName);
     this.blocks[blockName](container);
   }
 };
 window.application.screens["authorization"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderAuthorizationScreen;
 window.application.screens["phone"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderPhone;
-//window.application.blocks["incoming-call"] = renderIncomingCall;
 window.application.blocks["phone-button"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderPhoneButton;
 window.application.blocks["exit-button"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderExitButton;
 window.application.blocks["authorization-button"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.renderAuthorizationButton;
@@ -293,147 +269,143 @@ window.application.blocks["button-footer"] = _render_js__WEBPACK_IMPORTED_MODULE
 window.application.blocks["call_info"] = _render_js__WEBPACK_IMPORTED_MODULE_1__.getCallInfo;
 renderFirstScreen();
 function createUA() {
-  var socket = new jssip__WEBPACK_IMPORTED_MODULE_0__.WebSocketInterface("wss:/voip.uiscom.ru");
-  var configuration = {
-    sockets: [socket],
-    uri: "sip:0344302@voip.uiscom.ru",
-    password: "FYCpwA_3Bc",
-    sessionDescriptionHandlerFactoryOptions: {
-      constraints: {
-        audio: true,
-        video: true
-      }
-    }
-  };
-  var coolPhone = new jssip__WEBPACK_IMPORTED_MODULE_0__.UA(configuration);
-  coolPhone.on("connected", function (e) {
-    console.log("connected");
-  });
-  coolPhone.on("disconnected", function (e) {
-    console.log("disconnected");
-  });
-  var session;
-  coolPhone.on("newRTCSession", function (data) {
-    session = data.session;
-    if (session.direction === "incoming") {
-      var audio = new Audio("./call/call.mp3");
-      //audio.loop;
-      audio.play();
-      session.on("accepted", function () {
-        (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("accepted");
-        //console.log(session.start_time);
-      });
-      session.on("ended", function () {
-        (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("ended");
-        //console.log(session.end_time);
-      });
-      session.on("progress", function () {
-        (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("progress");
-      });
-      session.on("failed", function (e) {
-        (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("failed");
-      });
-      session.on("connecting", function () {
-        (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("connecting");
-
-        /////////////////////////////
-        var peerconnection = session.connection;
-        var localStream = peerconnection.getLocalStreams()[0];
-        console.log(peerconnection);
-        console.log(localStream);
-        // Handle local stream
-        if (localStream) {
-          // Clone local stream
-          var localClonedStream = localStream.clone();
-          console.log("UA set local stream");
-          var _localAudioControl = document.getElementById("localAudio");
-          _localAudioControl.src = localClonedStream;
+  chrome.storage.local.get(["login", "password", "server"], function (data) {
+    if (data.login && data.password && data.server) {
+      var socket = new jssip__WEBPACK_IMPORTED_MODULE_0__.WebSocketInterface("wss:/" + data.server);
+      var configuration = {
+        sockets: [socket],
+        uri: "sip:" + data.login + "@" + data.server,
+        password: data.password,
+        sessionDescriptionHandlerFactoryOptions: {
+          constraints: {
+            audio: true,
+            video: true
+          }
         }
-        localAudioControl.play();
-        // Как только астер отдаст нам поток абонента, мы его засунем к себе в наушники
-        /* session.addEventListener("IncomingRequest", (event) => {
-          console.log("UA session addstream");
-             // let remoteAudioControl = document.getElementById("remoteAudio");
-          // remoteAudioControl.srcObject = event.stream;
-        });*/
-        /////////////////////////////
+      };
+      var coolPhone = new jssip__WEBPACK_IMPORTED_MODULE_0__.UA(configuration);
+      coolPhone.on("connected", function (e) {});
+      coolPhone.on("disconnected", function (e) {
+        coolPhone.stop();
+        window.application.renderScreen("authorization");
+        var messageError = document.querySelector(".messageError");
+        messageError.textContent = "Введены неверные данные!";
       });
-      session.on("confirmed", function () {
-        (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("confirmed");
+      var session;
+      coolPhone.on("newRTCSession", function (data) {
+        session = data.session;
+        if (session.direction === "incoming") {
+          var interval;
+          var seconds = 0;
+          var messageTimeSpan = document.querySelector(".messageTimeSpan");
+          var audio = new Audio("./call/call.mp3");
+          audio.play();
+          session.on("accepted", function () {
+            (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("accepted");
+          });
+          session.on("ended", function () {
+            (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("ended");
+            clearInterval(interval);
+            messageTimeSpan.textContent = "";
+          });
+          session.on("progress", function () {
+            (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("progress");
+          });
+          session.on("failed", function (e) {
+            (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("failed");
+          });
+          session.on("connecting", function () {
+            (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("connecting");
+          });
+          session.on("peerconnection", function () {
+            var peerconnection = session.connection;
+            var localStream = peerconnection.getLocalStreams()[0];
+            if (localStream) {
+              var localClonedStream = localStream.clone();
+              var localAudioControl = document.querySelector(".localAudio");
+              localAudioControl.srcObject = localClonedStream;
+            }
+            peerconnection.onaddstream = function (event) {
+              var remoteAudioControl = document.querySelector(".remoteAudio");
+              remoteAudioControl.srcObject = event.stream;
+            };
+          });
+          session.on("confirmed", function () {
+            (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("confirmed");
+            interval = setInterval(function () {
+              seconds++;
+              messageTimeSpan.textContent = setTime(seconds);
+            }, 1000);
+          });
+          var timeCall = formatDate(new Date());
+          (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setCallInfo)(session.remote_identity.uri.user, timeCall);
+        }
       });
-      var timeCall = formatDate(new Date());
-      (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setCallInfo)(session.local_identity.uri.user, timeCall);
+      coolPhone.start();
+      var redBtn = document.querySelector(".phone__btn_ended");
+      redBtn.addEventListener("click", function () {
+        redButton(session);
+      });
+      var greenBtn = document.querySelector(".phone__btn_answer");
+      greenBtn.addEventListener("click", function () {
+        greenButton(session, coolPhone);
+      });
+      var exitBtn = document.querySelector(".exit__btn");
+      exitBtn.addEventListener("click", function () {
+        clearLoginPassword(coolPhone);
+        window.application.renderScreen("authorization");
+      });
     }
   });
-  coolPhone.start();
-  greenButton(session, coolPhone);
-  var redBtn = document.querySelector(".phone__btn_ended");
-  redBtn.addEventListener("click", function () {
-    redButton(session);
-  });
-
-  // return { coolPhone, session };
 }
 function greenButton(session, coolPhone) {
   var numberCall = document.querySelector(".callInput");
-  var greenBtn = document.querySelector(".phone__btn_answer");
-  greenBtn.addEventListener("click", function () {
-    console.log("greenbtnClick");
-    if (session) {
-      if (session.direction === "incoming" && !session.end_time && session.isInProgress()) {
-        console.log("ответить");
-        receiveCall();
-      } else {
-        if (numberCall.value) {
-          callPhone(coolPhone);
-        }
-      }
+  if (numberCall.value.trim() === "") {
+    (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("Введите номер");
+  }
+  if (session) {
+    if (session.direction === "incoming" && !session.end_time && session.isInProgress()) {
+      receiveCall(session);
     } else {
       if (numberCall.value) {
         callPhone(coolPhone);
       }
     }
-    numberCall.value = "";
-  });
-
-  //console.log(session.direction);
-  // console.log(session.isInProgress());
-  // console.log(session.end_time);
+  } else {
+    if (numberCall.value) {
+      callPhone(coolPhone);
+    }
+  }
+  numberCall.value = "";
 }
 function redButton(session) {
-  console.log(session);
-  //const redBtn = document.querySelector(".phone__btn_ended");
-
-  //redBtn.addEventListener("click", () => {
-  if (session.isInProgress() || session.isEstablished()) {
-    session.terminate();
+  if (session) {
+    if (session.isInProgress() || session.isEstablished()) {
+      session.terminate();
+    }
+    var localAudio = document.querySelector(".localAudio");
+    localAudio.pause();
+    var remoteAudio = document.querySelector(".remoteAudio");
+    remoteAudio.pause();
   }
-  // });
 }
 window.addEventListener("keydown", function (e) {
   if (e.key === "o") receiveCall();
 });
-function receiveCall() {
+function receiveCall(session) {
   if (session) {
-    console.log("answer");
     session.answer();
   }
 }
 function callPhone(coolPhone) {
+  var interval;
+  var seconds = 0;
+  var messageTimeSpan = document.querySelector(".messageTimeSpan");
   var options = {
     mediaConstraints: {
       audio: true,
       video: false
     }
-    // rtcOfferConstraints: {
-    //   offerToReceiveAudio: 1,
-    //   offerToReceiveVideo: 0,
-    // },
-    // pcConfig: {
-    //   hackStripTcp: true,
-    //   rtcpMuxPolicy: "negotiate",
-    //   iceServers: [],
-    // },
   };
   var numberCall = document.querySelector(".callInput");
   var server;
@@ -441,41 +413,62 @@ function callPhone(coolPhone) {
     server = data.server;
   });
   var sessionCall = coolPhone.call("sip:" + numberCall.value.trim() + server, options);
-  console.log(coolPhone);
   sessionCall.on("accepted", function () {
     (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("accepted");
   });
   sessionCall.on("ended", function () {
     (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("ended");
+    clearInterval(interval);
+    messageTimeSpan.textContent = "";
+    var localAudio = document.querySelector(".localAudio");
+    localAudio.pause();
+    var remoteAudio = document.querySelector(".remoteAudio");
+    remoteAudio.pause();
   });
   sessionCall.on("progress", function () {
     (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("progress");
   });
   sessionCall.on("failed", function (e) {
     (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("failed");
-    //console.log(e.cause);
   });
   sessionCall.on("connecting", function () {
     (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("connecting");
   });
   sessionCall.on("confirmed", function () {
     (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setMessage)("confirmed");
+    interval = setInterval(function () {
+      seconds++;
+      messageTimeSpan.textContent = setTime(seconds);
+    }, 1000);
+    var peerconnection = sessionCall.connection;
+    var localStream = peerconnection.getLocalStreams()[0];
+    var remoteStream = peerconnection.getRemoteStreams()[0];
+    if (localStream) {
+      var localClonedStream = localStream.clone();
+      var localAudioControl = document.querySelector(".localAudio");
+      localAudioControl.srcObject = localClonedStream;
+    }
+    if (remoteStream) {
+      var localClonedStreamRemote = remoteStream.clone();
+      var remoteAudioControl = document.querySelector(".remoteAudio");
+      remoteAudioControl.srcObject = localClonedStreamRemote;
+    }
   });
   var timeCall = formatDate(new Date());
   (0,_render_js__WEBPACK_IMPORTED_MODULE_1__.setCallInfo)(numberCall.value.trim(), timeCall);
 }
 function setLoginPassword(log, pas, ser) {
   chrome.storage.local.set({
-    login: "0344302"
+    login: log
   });
   chrome.storage.local.set({
-    password: "FYCpwA_3Bc"
+    password: pas
   });
   chrome.storage.local.set({
-    server: "voip.uiscom.ru"
+    server: ser
   });
 }
-function clearLoginPassword() {
+function clearLoginPassword(coolPhone) {
   chrome.storage.local.clear();
   coolPhone.stop();
   window.close();
@@ -485,7 +478,6 @@ function selectNumber(number) {
   callInput.value = number;
 }
 function renderFirstScreen() {
-  //const app = document.querySelector(".app");
   chrome.storage.local.get(["login"], function (data) {
     if (data.login) {
       window.application.renderScreen("phone");
@@ -495,7 +487,6 @@ function renderFirstScreen() {
   });
 }
 function formatDate(date) {
-  console.log(date);
   var dd = date.getDate();
   if (dd < 10) dd = "0" + dd;
   var mm = date.getMonth() + 1;
@@ -508,9 +499,13 @@ function formatDate(date) {
   if (min < 10) min = "0" + min;
   var sec = date.getSeconds();
   if (sec < 10) sec = "0" + sec;
-
-  //return dd + '.' + mm + '.' + yy;
-  return HH + "." + min + "." + sec;
+  return HH + ":" + min + ":" + sec;
+}
+function setTime(seconds) {
+  var hours = Math.floor(seconds / 60 / 60);
+  var minutes = Math.floor(seconds / 60) - hours * 60;
+  var sec = seconds % 60;
+  return hours + ":" + minutes + ":" + sec;
 }
 
 /***/ }),

@@ -15,17 +15,14 @@ export function setCallInfo(user, time) {
     let listCallInfo = data.callInfo.slice(-9);
     listCallInfo.push({ user, time });
     chrome.storage.local.set({ callInfo: listCallInfo });
+    const listCallDiv = document.querySelector(".listCallDiv");
+    window.application.renderBlock("call_info", listCallDiv);
   });
-  console.log(user);
-  const listCallDiv = document.querySelector(".listCallDiv");
-  window.application.renderBlock("call_info", listCallDiv);
 }
 
 //выводим историю звонков
 export function getCallInfo() {
-  console.log("getCallInfo");
   const listCall = chrome.storage.local.get({ callInfo: [] }, (data) => {
-    //console.log(data.callInfo);
     const listCallDivItem = document.querySelector(".listCallDivItem");
     listCallDivItem.textContent = "";
     const calls = data.callInfo.reverse();
@@ -42,7 +39,6 @@ export function getCallInfo() {
       const divTimeCall = document.createElement("divTime");
       divTimeCall.textContent = item.time;
       divCall.appendChild(divTimeCall);
-      console.log("render" + item);
     });
   });
 }
@@ -51,10 +47,6 @@ export function getCallInfo() {
 export function renderEndedButton(container) {
   const button = document.createElement("button");
   button.classList.add("phone__btn_ended");
-
-  //   button.addEventListener("click", () => {
-  //     redButton();
-  //   });
   container.appendChild(button);
 }
 
@@ -62,11 +54,6 @@ export function renderEndedButton(container) {
 export function renderPhoneButton(container) {
   const button = document.createElement("button");
   button.classList.add("phone__btn_answer");
-  //button.setAttribute("disabled", "true");
-
-  //   button.addEventListener("click", () => {
-  //     greenButton();
-  //   });
   container.appendChild(button);
 }
 
@@ -91,12 +78,6 @@ export function setMessage(message) {
 export function renderExitButton(container) {
   const button = document.createElement("button");
   button.classList.add("exit__btn");
-
-  button.addEventListener("click", () => {
-    console.log("click_crear");
-    clearLoginPassword();
-    window.application.renderScreen("authorization");
-  });
   container.appendChild(button);
 }
 
@@ -114,9 +95,13 @@ export function renderAuthorizationButton(container) {
     const login = loginIn.value.trim();
     const password = passwordIn.value.trim();
     const server = serverIn.value.trim();
-
-    setLoginPassword(login, password, server);
-    window.application.renderScreen("phone");
+    if (login && password && server) {
+      setLoginPassword(login, password, server);
+      window.application.renderScreen("phone");
+    } else {
+      const mes = document.querySelector(".messageError");
+      mes.textContent = "Введите учетные данные";
+    }
   });
   container.appendChild(button);
 }
@@ -126,6 +111,10 @@ export function renderAuthorizationScreen(container) {
   const formAuto = document.createElement("div");
   formAuto.classList.add("authorization");
   container.appendChild(formAuto);
+
+  const message = document.createElement("span");
+  message.classList.add("messageError");
+  formAuto.appendChild(message);
 
   const login = document.createElement("input");
   login.type = "text";
@@ -163,6 +152,11 @@ export function renderStatusCall(container) {
   messageSpan.classList.add("messageSpan");
   messageSpan.textContent = "";
   messageDiv.appendChild(messageSpan);
+
+  const messageTimeSpan = document.createElement("span");
+  messageTimeSpan.classList.add("messageTimeSpan");
+  messageTimeSpan.textContent = "  ";
+  messageDiv.appendChild(messageTimeSpan);
 }
 
 //отрисовка блока основного экрана
@@ -174,14 +168,11 @@ export function renderPhone(container) {
   const localAudio = document.createElement("audio");
   localAudio.classList.add("localAudio");
   localAudio.setAttribute("autoPlay", true);
-  localAudio.setAttribute("muted", true);
   container.appendChild(localAudio);
-
 
   const remoteAudio = document.createElement("audio");
   remoteAudio.classList.add("remoteAudio");
   remoteAudio.setAttribute("autoPlay", true);
-  remoteAudio.setAttribute("muted", true);
   container.appendChild(remoteAudio);
 
   const listCallDiv = document.createElement("div");
@@ -197,9 +188,6 @@ export function renderPhone(container) {
   listCallDivItem.classList.add("listCallDivItem");
   listCallDiv.appendChild(listCallDivItem);
 
-  //getCallInfo();
-  // const listCallDivItem = document.querySelector(".listCallDivItem");
-  //listCallDivItem.textContent = "";
   window.application.renderBlock("call_info", listCallDiv);
 
   const ButtonCallDiv = document.createElement("div");
@@ -217,15 +205,9 @@ export function renderPhone(container) {
   const callInput = document.createElement("input");
   callInput.classList.add("callInput");
   callDiv.appendChild(callInput);
-  /*
-  callInput.addEventListener("click", () => {
-    const btn = document.querySelector(".phone__btn_answer");
-    btn.setAttribute("disabled", "false");
-
-    console.log("click");
-  });*/
 
   window.application.renderBlock("status-call", ButtonCallDiv);
   window.application.renderBlock("button-footer", ButtonCallDiv);
+
   createUA();
 }
